@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
-option go_package = " github.com/Dnlbb/auth/pkg/auth;auth";
+option go_package = "github.com/Dnlbb/auth/pkg/auth;auth";
 
 service Auth {
     rpc Create(CreateRequest) returns (CreateResponse);
