@@ -48,10 +48,10 @@ func main() {
 	reflection.Register(s)
 	desc.RegisterAuthServer(s, &server{})
 
-	log.Printf("server listening at #{lis.Addr()}")
+	log.Printf("server listening at %v", lis.Addr())
 
 	if err = s.Serve(lis); err != nil {
-		log.Fatal("failed to serve: #{err}")
+		log.Fatalf("failed to serve: %v", err)
 	}
 
 }
