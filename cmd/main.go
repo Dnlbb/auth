@@ -21,7 +21,7 @@ func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse
 }
 
 func (s *server) Create(_ context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	log.Printf("User #+%v\n", req.GetUser())
+	log.Printf("User %+v", req.GetUser())
 	log.Printf("Password: %s", req.Password)
 	log.Printf("Password confirm: %s", req.PasswordConfirm)
 	return &desc.CreateResponse{}, nil
