@@ -16,7 +16,7 @@ type server struct {
 }
 
 func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	log.Printf("user id:%d", req.GetId())
+	log.Printf("User id:%d", req.GetId())
 	return &desc.GetResponse{}, nil
 }
 

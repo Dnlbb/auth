@@ -27,7 +27,6 @@ message User {
     Role role = 3;
 }
 
-
 message CreateRequest {
     User user = 1;
     string password = 2;
@@ -53,6 +52,7 @@ message UpdateRequest {
     int64 id = 1;
     google.protobuf.StringValue name = 2;
     google.protobuf.StringValue email = 3;
+    Role role = 4;
 }
 
 message DeleteRequest {

@@ -1,0 +1,4 @@
+/postgres/.env
+/bin/protoc-gen-go
+/bin/protoc-gen-go-grpc
+/postgres/bin/goose
