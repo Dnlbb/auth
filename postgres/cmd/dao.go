@@ -36,6 +36,7 @@ func getDSN() string {
 	return dsn
 }
 
+// CloseCon close connection to db
 func (s *Storage) CloseCon() {
 	err := s.con.Close(s.ctx)
 	if err != nil {
