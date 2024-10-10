@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	dao "github.com/Dnlbb/auth/postgres/cmd"
-	"github.com/joho/godotenv"
 	"log"
 	"net"
+
+	dao "github.com/Dnlbb/auth/postgres/cmd"
+	"github.com/joho/godotenv"
 
 	desc "github.com/Dnlbb/auth/pkg/auth"
 	"google.golang.org/grpc"
