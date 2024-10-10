@@ -20,7 +20,7 @@ type server struct {
 
 func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	log.Printf("User id:%d", req.GetId())
-	userId := dao.GetId(req.GetId())
+	userId := dao.GetID(req.GetId())
 
 	user, err := s.storage.Get(userId)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *server) Update(_ context.Context, req *desc.UpdateRequest) (*emptypb.Em
 	log.Printf("User id: %d", req.GetId())
 	log.Printf("Username: %s", req.Name.Value)
 	log.Printf("Email: %s", req.Email.Value)
-	updateUser := dao.UpdateUser{Id: req.GetId(),
+	updateUser := dao.UpdateUser{ID: req.GetId(),
 		Name:  req.Name.Value,
 		Email: req.Email.Value,
 		Role:  req.GetRole()}
@@ -66,7 +66,7 @@ func (s *server) Update(_ context.Context, req *desc.UpdateRequest) (*emptypb.Em
 
 func (s *server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("User id: %d", req.GetId())
-	idDel := dao.DeleteId(req.GetId())
+	idDel := dao.DeleteID(req.GetId())
 	err := s.storage.Delete(idDel)
 	if err != nil {
 		log.Printf("Error deleting user: %v", err)

@@ -4,28 +4,30 @@ import (
 	"github.com/Dnlbb/auth/pkg/auth"
 )
 
+// PostgresInterface Далее будет заменен для гибкой работы с бд
 type PostgresInterface interface {
 	Save(user User) error
 	Update(update UpdateUser) error
-	Delete(id DeleteId) error
-	Get(id GetId) (User, error)
+	Delete(id DeleteID) error
+	Get(id GetID) (User, error)
 }
 type (
+	// User for db
 	User struct {
 		Name     string
 		Email    string
 		Role     auth.Role
 		Password string
 	}
-
+	// UpdateUser for db
 	UpdateUser struct {
-		Id    int64
+		ID    int64
 		Name  string
 		Email string
 		Role  auth.Role
 	}
-
-	DeleteId int64
-
-	GetId int64
+	// DeleteID for db
+	DeleteID int64
+	// GetID for db
+	GetID int64
 )
