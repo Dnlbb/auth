@@ -24,6 +24,26 @@ jobs:
         - name: Test
           run: go test -v ./...
 
+  prepare:
+    name: prepare
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Go
+          uses: actions/setup-go@v5
+          with:
+            go-version: '1.22'
+
+        - name: Run goimports
+          run: goimports -w ./postgres/cmd/dao.go ./cmd/main.go
+
+        - name: golangci-lint
+          uses: golangci/golangci-lint-action@v6
+          with:
+            version: v1.60
+            args: --timeout=30m --config=./.golangci.pipeline.yaml
+
   linter:
     name: lint
     runs-on: ubuntu-latest
