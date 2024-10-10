@@ -11,11 +11,13 @@ const (
 	dbDSN = "DEFAULT_DSN"
 )
 
+// Storage storage
 type Storage struct {
 	con *pgx.Conn
 	ctx context.Context
 }
 
+// InitStorage storage for postgresql
 func InitStorage() (*Storage, error) {
 	ctx := context.Background()
 	dbDSN := getDSN()
@@ -34,9 +36,11 @@ func getDSN() string {
 	return dsn
 }
 
-func (s *Storage) closeCon() error {
+func (s *Storage) CloseCon() {
 	err := s.con.Close(s.ctx)
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Save for postgresql

@@ -20,9 +20,9 @@ type server struct {
 
 func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	log.Printf("User id:%d", req.GetId())
-	userId := dao.GetID(req.GetId())
+	userID := dao.GetID(req.GetId())
 
-	user, err := s.storage.Get(userId)
+	user, err := s.storage.Get(userID)
 	if err != nil {
 		log.Printf("Error getting user: %v", err)
 		return nil, err
@@ -86,6 +86,7 @@ func main() {
 	}
 
 	storage, err := dao.InitStorage()
+	defer storage.CloseCon()
 	if err != nil {
 		log.Fatal("failed to init storage")
 	}
