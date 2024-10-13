@@ -81,10 +81,10 @@ func (s *Storage) Delete(id DeleteID) error {
 // Get for postgresql
 func (s *Storage) Get(id GetID) (User, error) {
 	res, err := s.con.Query(s.ctx, "SELECT name, email, role FROM USERS WHERE id = $1", id)
+	defer res.Close()
 	if err != nil {
 		log.Fatal(err, "Error getting user")
 	}
-	defer res.Close()
 	var resUser User
 	err = res.Scan(&resUser.Name, &resUser.Email, &resUser.Role)
 	if err != nil {
@@ -92,4 +92,20 @@ func (s *Storage) Get(id GetID) (User, error) {
 	}
 	log.Printf("Got user: %+v", resUser)
 	return resUser, err
+}
+
+// GetProfile получение профиля пользователя для сервиса с чатами.
+func (s *Storage) GetProfile(username string) (UserProfile, error) {
+	res, err := s.con.Query(s.ctx, "SELECT id, name, email, role FROM USERS WHERE name = $1", username)
+	defer res.Close()
+	if err != nil {
+		log.Fatal("Ошибка при получении профиля пользователя из базы данных", err)
+	}
+	var resUserProfile UserProfile
+	err = res.Scan(&resUserProfile.ID, &resUserProfile.Name, &resUserProfile.Email, &resUserProfile.Role)
+	if err != nil {
+		log.Fatal("Ошибка при сканировании данных из ответа с профилем пользователя", err)
+	}
+	log.Printf("Профиль пользователя: %+v", resUserProfile)
+	return resUserProfile, err
 }

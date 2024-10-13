@@ -16,10 +16,10 @@ get-deps:
 
 
 generate:
-	make generate-note-api
+	make generate-api
 
 
-generate-note-api:
+generate-api:
 	mkdir -p pkg/auth
 	protoc --proto_path=./api \
 	--go_out=pkg/auth --go_opt=paths=source_relative \

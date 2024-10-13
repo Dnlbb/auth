@@ -5,13 +5,15 @@ import (
 	"log"
 	"net"
 
-	dao "github.com/Dnlbb/auth/postgres/cmd"
 	"github.com/joho/godotenv"
 
-	desc "github.com/Dnlbb/auth/pkg/auth"
+	dao "github.com/Dnlbb/auth/postgres/cmd"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
+
+	desc "github.com/Dnlbb/auth/pkg/auth"
 )
 
 type server struct {
@@ -76,6 +78,25 @@ func (s *server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Em
 
 	return &emptypb.Empty{}, nil
 }
+
+func (s *server) GetProfile(_ context.Context, req *desc.GetProfileRequest) (*desc.GetProfileResponse, error) {
+	log.Printf("Имя пользователя: %s", req.GetUsername())
+	var UserProfile dao.UserProfile
+	UserProfile, err := s.storage.GetProfile(req.GetUsername())
+	if err != nil {
+		log.Printf("Ошибка при получении профиля пользователя: %v", err)
+		return nil, err
+	}
+	response := &desc.GetProfileResponse{
+		Id:    UserProfile.ID,
+		Name:  UserProfile.Name,
+		Email: UserProfile.Email,
+		Role:  UserProfile.Role,
+	}
+	log.Printf("Профиль пользователя для добавления в чат: %+v", response)
+	return response, nil
+}
+
 func main() {
 	err := godotenv.Load("../postgres/.env")
 	if err != nil {

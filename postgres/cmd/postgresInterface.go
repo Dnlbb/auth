@@ -10,6 +10,7 @@ type PostgresInterface interface {
 	Update(update UpdateUser) error
 	Delete(id DeleteID) error
 	Get(id GetID) (User, error)
+	GetProfile(username string) (UserProfile, error)
 }
 type (
 	// User for db
@@ -30,4 +31,11 @@ type (
 	DeleteID int64
 	// GetID for db
 	GetID int64
+	// UserProfile for chat-service
+	UserProfile struct {
+		ID    int64
+		Name  string
+		Email string
+		Role  auth.Role
+	}
 )
