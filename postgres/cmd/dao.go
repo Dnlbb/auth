@@ -2,6 +2,8 @@ package dao
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -47,7 +49,7 @@ func (s *Storage) CloseCon() {
 
 // Save for postgresql
 func (s *Storage) Save(user User) error {
-	res, err := s.con.Exec(s.ctx, "INSERT INTO USERS (name, email, role, password) VALUES ($1, $2, $3, $4)", user.Name, user.Email, user.Role, user.Password)
+	res, err := s.con.Exec(s.ctx, "INSERT INTO users (name, email, role, password) VALUES ($1, $2, $3, $4)", user.Name, user.Email, user.Role, user.Password)
 	if err != nil {
 		log.Fatal("Error inserting user into database")
 		return err
@@ -58,7 +60,7 @@ func (s *Storage) Save(user User) error {
 
 // Update for postgresql
 func (s *Storage) Update(update UpdateUser) error {
-	res, err := s.con.Exec(s.ctx, "UPDATE USERS SET name = $1, email = $2, role = $3 WHERE id = $4", update.Name, update.Email, update.Role, update.ID)
+	res, err := s.con.Exec(s.ctx, "UPDATE users SET name = $1, email = $2, role = $3, password = $4 WHERE id = $5", update.Name, update.Email, update.Role, update.Password, update.ID)
 	if err != nil {
 		log.Println("Error updating user")
 		return err
@@ -69,7 +71,7 @@ func (s *Storage) Update(update UpdateUser) error {
 
 // Delete for postgresql
 func (s *Storage) Delete(id DeleteID) error {
-	res, err := s.con.Exec(s.ctx, "DELETE FROM USERS WHERE id = $1", id)
+	res, err := s.con.Exec(s.ctx, "DELETE FROM users WHERE id = $1", id)
 	if err != nil {
 		log.Fatal("Error deleting user")
 		return err
@@ -78,34 +80,27 @@ func (s *Storage) Delete(id DeleteID) error {
 	return nil
 }
 
-// Get for postgresql
-func (s *Storage) Get(id GetID) (User, error) {
-	res, err := s.con.Query(s.ctx, "SELECT name, email, role FROM USERS WHERE id = $1", id)
-	defer res.Close()
-	if err != nil {
-		log.Fatal(err, "Error getting user")
-	}
-	var resUser User
-	err = res.Scan(&resUser.Name, &resUser.Email, &resUser.Role)
-	if err != nil {
-		log.Fatal(err, "Error getting user")
-	}
-	log.Printf("Got user: %+v", resUser)
-	return resUser, err
-}
+// GetUser for postgresql
+func (s *Storage) GetUser(params GetUserParams) (*User, error) {
+	var user User
+	var err error
 
-// GetProfile получение профиля пользователя для сервиса с чатами.
-func (s *Storage) GetProfile(username string) (UserProfile, error) {
-	res, err := s.con.Query(s.ctx, "SELECT id, name, email, role FROM USERS WHERE name = $1", username)
-	defer res.Close()
-	if err != nil {
-		log.Fatal("Ошибка при получении профиля пользователя из базы данных", err)
+	switch {
+	case params.ID != nil:
+		err = s.con.QueryRow(s.ctx, "SELECT id, name, email, role, created_at, updated_at FROM users WHERE id = $1", *params.ID).
+			Scan(&user.ID, &user.Name, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+	case params.Username != nil:
+		err = s.con.QueryRow(s.ctx, "SELECT id, name, email, role, created_at, updated_at FROM users WHERE name = $1", *params.Username).
+			Scan(&user.ID, &user.Name, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+	default:
+		return nil, fmt.Errorf("не указан ни ID, ни Username")
 	}
-	var resUserProfile UserProfile
-	err = res.Scan(&resUserProfile.ID, &resUserProfile.Name, &resUserProfile.Email, &resUserProfile.Role)
-	if err != nil {
-		log.Fatal("Ошибка при сканировании данных из ответа с профилем пользователя", err)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("пользователя не существует")
+	} else if err != nil {
+		return nil, fmt.Errorf("ошибка при обращении в базу для получения профиля пользователя: %v", err)
 	}
-	log.Printf("Профиль пользователя: %+v", resUserProfile)
-	return resUserProfile, err
+
+	return &user, nil
 }

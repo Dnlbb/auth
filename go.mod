@@ -3,6 +3,7 @@ module github.com/Dnlbb/auth
 go 1.22.5
 
 require (
+	github.com/golang/protobuf v1.5.0
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/joho/godotenv v1.5.1
 	google.golang.org/grpc v1.66.0

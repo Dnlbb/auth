@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/joho/godotenv"
 
 	dao "github.com/Dnlbb/auth/postgres/cmd"
@@ -13,7 +15,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	desc "github.com/Dnlbb/auth/pkg/auth"
+	desc "github.com/Dnlbb/auth/pkg/auth_v1"
 )
 
 type server struct {
@@ -22,16 +24,41 @@ type server struct {
 }
 
 func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	log.Printf("User id:%d", req.GetId())
-	userID := dao.GetID(req.GetId())
-
-	user, err := s.storage.Get(userID)
-	if err != nil {
-		log.Printf("Error getting user: %v", err)
-		return nil, err
+	var params dao.GetUserParams
+	// Достаем пришедшие параметры
+	switch nameOrID := req.NameOrId.(type) {
+	case *desc.GetRequest_Id:
+		params.ID = &nameOrID.Id
+	case *desc.GetRequest_Username:
+		params.Username = &nameOrID.Username
+	default:
+		return nil, fmt.Errorf("необходимо указать либо ID, либо Username")
 	}
-	log.Printf("User:%+v", user)
-	return &desc.GetResponse{}, nil
+
+	UserProfile, err := s.storage.GetUser(params)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка при получении профиля пользователя: %v", err)
+	}
+	createdAtProto, err := ptypes.TimestampProto(UserProfile.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка при преобразовании времени CreatedAt: %v", err)
+	}
+	updatedAtProto, err := ptypes.TimestampProto(UserProfile.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка при преобразовании времени UpdatedAt: %v", err)
+	}
+
+	response := desc.GetResponse{Id: UserProfile.ID,
+		User: &desc.User{
+			Name:  UserProfile.Name,
+			Email: UserProfile.Email,
+			Role:  UserProfile.Role,
+		},
+		CreatedAt: createdAtProto,
+		UpdatedAt: updatedAtProto,
+	}
+
+	return &response, nil
 }
 
 func (s *server) Create(_ context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
@@ -77,24 +104,6 @@ func (s *server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Em
 	}
 
 	return &emptypb.Empty{}, nil
-}
-
-func (s *server) GetProfile(_ context.Context, req *desc.GetProfileRequest) (*desc.GetProfileResponse, error) {
-	log.Printf("Имя пользователя: %s", req.GetUsername())
-	var UserProfile dao.UserProfile
-	UserProfile, err := s.storage.GetProfile(req.GetUsername())
-	if err != nil {
-		log.Printf("Ошибка при получении профиля пользователя: %v", err)
-		return nil, err
-	}
-	response := &desc.GetProfileResponse{
-		Id:    UserProfile.ID,
-		Name:  UserProfile.Name,
-		Email: UserProfile.Email,
-		Role:  UserProfile.Role,
-	}
-	log.Printf("Профиль пользователя для добавления в чат: %+v", response)
-	return response, nil
 }
 
 func main() {

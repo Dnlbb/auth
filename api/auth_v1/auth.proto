@@ -13,7 +13,6 @@ service Auth {
     rpc Get(GetRequest) returns (GetResponse);
     rpc Update(UpdateRequest) returns (google.protobuf.Empty);
     rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
-    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
 }
 
 enum Role {
@@ -39,7 +38,10 @@ message CreateResponse {
 }
 
 message GetRequest {
-    int64 id = 1;
+    oneof nameOrId {
+        int64 id = 1;
+        string username = 2;
+    }
 }
 
 message GetResponse {
@@ -61,13 +63,3 @@ message DeleteRequest {
 }
 
 
-message GetProfileRequest {
-    string username = 1;
-}
-
-message GetProfileResponse {
-    int64 id = 1;
-    string name = 2;
-    string email = 3;
-    Role role = 4;
-}
