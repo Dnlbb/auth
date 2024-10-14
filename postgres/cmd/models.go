@@ -1,8 +1,9 @@
 package dao
 
 import (
-	auth "github.com/Dnlbb/auth/pkg/auth_v1"
 	"time"
+
+	auth "github.com/Dnlbb/auth/pkg/auth_v1"
 )
 
 type (
