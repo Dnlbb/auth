@@ -4,7 +4,7 @@
 // - protoc             v3.21.12
 // source: auth.proto
 
-package auth
+package auth_v1
 
 import (
 	context "context"
@@ -39,7 +39,7 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 
 func (c *authClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
 	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, "/api.Auth/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.auth_v1.Auth/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *authClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc
 
 func (c *authClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/api.Auth/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.auth_v1.Auth/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *authClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallO
 
 func (c *authClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.Auth/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.auth_v1.Auth/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *authClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc
 
 func (c *authClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.Auth/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.auth_v1.Auth/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func _Auth_Create_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Auth/Create",
+		FullMethod: "/api.auth_v1.Auth/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Create(ctx, req.(*CreateRequest))
@@ -141,7 +141,7 @@ func _Auth_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Auth/Get",
+		FullMethod: "/api.auth_v1.Auth/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Get(ctx, req.(*GetRequest))
@@ -159,7 +159,7 @@ func _Auth_Update_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Auth/Update",
+		FullMethod: "/api.auth_v1.Auth/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Update(ctx, req.(*UpdateRequest))
@@ -177,7 +177,7 @@ func _Auth_Delete_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Auth/Delete",
+		FullMethod: "/api.auth_v1.Auth/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Delete(ctx, req.(*DeleteRequest))
@@ -189,7 +189,7 @@ func _Auth_Delete_Handler(srv interface{}, ctx context.Context, dec func(interfa
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Auth_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.Auth",
+	ServiceName: "api.auth_v1.Auth",
 	HandlerType: (*AuthServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
