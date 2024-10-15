@@ -1,6 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE table users (
+
+CREATE table user (
     id serial primary key,
     name VARCHAR(20) not null,
     email VARCHAR(30) not null,
@@ -14,4 +15,5 @@ CREATE table users (
 -- +goose Down
 -- +goose StatementBegin
 drop table users;
+
 -- +goose StatementEnd
