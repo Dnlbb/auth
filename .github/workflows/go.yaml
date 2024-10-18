@@ -141,6 +141,7 @@ jobs:
             echo "DB_USER=${{ secrets.PG_USER }}" >> .env
             echo "DB_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
             echo "DB_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
+            echo "MIGRATION_DIR=./migrations" >> .env
 
             # Удалить существующий контейнер db_migrator, если он уже запущен
             docker stop db_migrator || true
