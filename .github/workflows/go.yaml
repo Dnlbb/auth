@@ -105,6 +105,7 @@ jobs:
       - name: Deploy PostgreSQL and run migrations on remote server
         uses: appleboy/ssh-action@v1.0.0
         with:
+          debug: true
           host: ${{ secrets.SERVER_POSTGRE_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
