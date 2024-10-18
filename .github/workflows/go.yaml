@@ -110,6 +110,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 33
           script: |
             docker volume create postgres_volume || true
             docker stop postgres-auth || true
