@@ -106,15 +106,15 @@ jobs:
         with:
           debug: true
           host: ${{ secrets.SERVER_POSTGRE_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}  # если используется
           port: 22
           script: |
-            docker volume create postgres_volume  true
-            docker stop postgres-auth  true
+            docker volume create postgres_volume || true
+            docker stop postgres-auth || true
             docker rm postgres-auth || true
-            
+
             docker run -d --name postgres-auth \
               --network my_network \
               -e POSTGRES_DB=${{ secrets.PG_DATABASE_NAME }} \
@@ -123,11 +123,15 @@ jobs:
               -v postgres_volume:/var/lib/postgresql/auth \
               -p ${{ secrets.PG_PORT }}:5432 \
               postgres:17.0-alpine3.20
-            
+
             sleep 10
-            
+
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
-            
+
+            # Удалить существующий контейнер db_migrator, если он уже запущен
+            docker stop db_migrator || true
+            docker rm db_migrator || true
+
             docker run --rm --name db_migrator \
               --network my_network \
               -e DB_HOST=postgres-auth \
