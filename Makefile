@@ -36,6 +36,6 @@ generate-api:
 build:
 	GOOS=linux GOARCH=amd64 go build -o auth_linux cmd/main.go
 
-copy-to-server:
-	scp auth_linux root@176.114.67.198
+
+
 
