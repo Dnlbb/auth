@@ -90,7 +90,7 @@ jobs:
         run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
 
       - name: Build the migrator image
-        run: docker build -t ${{ secrets.REGISTRY }}/migrator:latest -f /postgres/migration.Dockerfile .
+        run: docker build -t ${{ secrets.REGISTRY }}/migrator:latest -f ./postgres/migration.Dockerfile .
 
       - name: Push the migrator image
         run: docker push ${{ secrets.REGISTRY }}/migrator:latest
