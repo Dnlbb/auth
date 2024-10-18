@@ -72,7 +72,8 @@ jobs:
         with:
           host: ${{ secrets.SERVER_AUTH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSHKEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,CONTAINER_NAME
           script: |
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
@@ -117,7 +118,7 @@ jobs:
           host: ${{ secrets.SERVER_POSTGRE_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}  # если используется
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: 22
           script: |
             docker volume create postgres_volume || true
