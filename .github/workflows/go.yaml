@@ -106,7 +106,7 @@ jobs:
           with:
             debug: true
             host: ${{ secrets.SERVER_POSTGRE_HOST }}
-            username: ${{ secrets.SSH_USER }}
+            username: ${{ secrets.SSH_USERNAME }}
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             passphrase: ${{ secrets.SSH_PASSPHRASE }}
             port: 22
