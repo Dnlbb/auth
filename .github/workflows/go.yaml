@@ -43,6 +43,15 @@ jobs:
     needs: [build-and-test, linter]
     steps:
       - uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: |
+            mkdir -p ../postgres  # Создаем директорию, если ее нет
+            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ../postgres/.env
+            echo "PG_USER=${{ secrets.PG_USER }}" >> ../postgres/.env
+            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> ../postgres/.env 
+        
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
