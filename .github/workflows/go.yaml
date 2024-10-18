@@ -102,12 +102,6 @@ jobs:
   deploy-postgres:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh-passphrase: ${{ secrets.SSH_PASSPHRASE }}
-
       - name: Deploy PostgreSQL and run migrations on remote server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -115,10 +109,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            set -e 
-            # docker volume create postgres_volume || true
-            # docker stop postgres-auth || true
-            # docker rm postgres-auth || true
+            docker volume create postgres_volume || true
+            docker stop postgres-auth || true
+            docker rm postgres-auth || true
 
             docker run -d --name postgres-auth \
               --network my_network \
