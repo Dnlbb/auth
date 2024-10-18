@@ -85,8 +85,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
+
+      - name: Create .env file
+        run: |
+          echo "DB_HOST=postgres-auth" >> .env
+          echo "PG_DATABASE_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "PG_USER=${{ secrets.DB_USER }}" >> .env
+          echo "PG_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
       - name: Build the migrator image
         run: |
