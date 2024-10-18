@@ -12,7 +12,7 @@ WORKDIR /root
 
 ADD ./postgres/migrations/*.sql migrations/
 ADD ./postgres/migration.sh .
-ADD ./postgres/.env .
+
 
 RUN chmod +x migration.sh
 

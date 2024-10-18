@@ -46,11 +46,10 @@ jobs:
 
       - name: Create .env file
         run: |
-            mkdir -p ../postgres  # Создаем директорию, если ее нет
-            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ../postgres/.env
-            echo "PG_USER=${{ secrets.PG_USER }}" >> ../postgres/.env
-            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> ../postgres/.env 
-        
+            touch .env
+            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
+            echo "PG_USER=${{ secrets.PG_USER }}" >> .env
+            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env 
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -85,15 +84,20 @@ jobs:
   build-and-push-migrator:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
+    - uses: actions/checkout@v3
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
 
-      - name: Build the migrator image
-        run: docker build -t ${{ secrets.REGISTRY }}/migrator:latest -f ./postgres/migration.Dockerfile .
+    - name: Build the migrator image
+      run: |
+        docker build --build-arg DB_USER=${{ secrets.DB_USER }} \
+                     --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                     --build-arg DB_NAME=${{ secrets.DB_NAME }} \
+                     -t ${{ secrets.REGISTRY }}/migrator:latest -f ./postgres/migration.Dockerfile .
 
-      - name: Push the migrator image
-        run: docker push ${{ secrets.REGISTRY }}/migrator:latest
+    - name: Push the migrator image
+      run: docker push ${{ secrets.REGISTRY }}/migrator:latest
+
 
   deploy-postgres:
     runs-on: ubuntu-latest
