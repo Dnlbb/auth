@@ -138,9 +138,9 @@ jobs:
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
 
             echo "DB_HOST=postgres-auth" > .env
-            echo "DB_USER=${{ secrets.PG_USER }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
-            echo "DB_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
+            echo "PG_USER=${{ secrets.PG_USER }}" >> .env
+            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
+            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
             echo "MIGRATION_DIR=./migrations" >> .env
 
             # Удалить существующий контейнер db_migrator, если он уже запущен
@@ -150,5 +150,6 @@ jobs:
             # Запуск контейнера мигратора с передачей файла .env внутрь
             docker run --rm --name db_migrator \
               --network my_network \
+              --host postgres-auth \
               --env-file .env \
               ${{ secrets.REGISTRY }}/migrator:latest
