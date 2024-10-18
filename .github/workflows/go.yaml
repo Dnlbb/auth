@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy PostgreSQL and run migrations on remote server
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@master
         with:
           debug: true
           host: ${{ secrets.SERVER_POSTGRE_HOST }}
