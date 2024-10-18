@@ -102,14 +102,9 @@ jobs:
   deploy-postgres:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Deploy PostgreSQL and run migrations on remote server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
+       - name: Deploy PostgreSQL and run migrations on remote server
+         uses: appleboy/ssh-action@v1.0.0
+         with:
           host: ${{ secrets.SERVER_POSTGRE_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
