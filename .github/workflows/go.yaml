@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Test SSH connection
-          uses: appleboy/ssh-action@master
+          uses: appleboy/ssh-action@v1.0.0
           with:
             debug: true
             host: ${{ secrets.SERVER_POSTGRE_HOST }}
