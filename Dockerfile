@@ -21,4 +21,4 @@ COPY --from=builder /github.com/Dnlbb/auth/postgres/.env ./postgres/.env
 
 
 
-CMD ["./cmd/auth-server"]
+CMD ["sh", "-c", "cd cmd && ./auth-server"]
