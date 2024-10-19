@@ -54,7 +54,7 @@ jobs:
           echo "PG_PORT=${{ secrets.PG_PORT }}" >> ./postgres/.env
           echo "DB_HOST=postgres-auth" >> ./postgres/.env
           echo "MIGRATION_DIR=./migrations" >> ./postgres/.env
-          echo "DSN=${{ secrets.SERVER_POSTGRE_HOST }} port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  ./postgres/.env
+          echo "DSN=host=${{ secrets.SERVER_POSTGRE_HOST }} port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  ./postgres/.env
 
 
       - name: Set up Docker Buildx
