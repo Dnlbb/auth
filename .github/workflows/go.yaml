@@ -46,7 +46,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          mkdir -p ./postgres  # Используем относительный путь для создания директории
+          mkdir -p ./postgres 
           touch ./postgres/.env
           echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ./postgres/.env
           echo "PG_USER=${{ secrets.PG_USER }}" >> ./postgres/.env
@@ -98,7 +98,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          mkdir -p ./postgres  # Используем относительный путь для создания директории
+          mkdir -p ./postgres 
           touch ./postgres/.env
           echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ./postgres/.env
           echo "PG_USER=${{ secrets.PG_USER }}" >> ./postgres/.env
@@ -149,9 +149,9 @@ jobs:
 
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
 
-                  - name: Create .env file
+              
             
-            mkdir -p ./postgres  # Создание относительной директории
+            mkdir -p ./postgres  
             touch ./postgres/.env
             echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ./postgres/.env
             echo "PG_USER=${{ secrets.PG_USER }}" >> ./postgres/.env
@@ -161,12 +161,11 @@ jobs:
             echo "MIGRATION_DIR=./migrations" >> ./postgres/.env
             echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  ./postgres/.env
             
-            
-            # Удалить существующий контейнер db_migrator, если он уже запущен
+         
             docker stop db_migrator || true
             docker rm db_migrator || true
 
-            # Запуск контейнера мигратора с передачей файла .env внутрь
+            
             docker run --rm --name db_migrator \
               --network my_network \
               --env-file .env \
