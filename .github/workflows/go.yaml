@@ -50,6 +50,7 @@ jobs:
           echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
           echo "PG_USER=${{ secrets.PG_USER }}" >> .env
           echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env 
+          echo "DB_HOST=postgres-auth" >> .env
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
