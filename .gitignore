@@ -4,3 +4,4 @@
 /bin/golangci-lint
 /postgres/bin/goose
 .idea/
+.env

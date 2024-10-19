@@ -15,3 +15,12 @@ services:
     volumes:
       - postgres_volume:/var/lib/postgresql/auth
 
+  migrator:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: postgres-auth
+        
+
