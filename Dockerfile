@@ -17,7 +17,8 @@ WORKDIR /root/
 
 # Копируем бинарник auth-server из builder стадии
 COPY --from=builder /github.com/Dnlbb/auth/bin/auth-server .
-COPY --from=builder /github.com/Dnlbb/auth/postgres/.env ../postgres/
+COPY --from=builder /github.com/Dnlbb/auth/postgres/.env ./postgres/.env
+
 
 # Указываем команду для запуска
 CMD ["./auth-server"]

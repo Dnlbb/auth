@@ -21,7 +21,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("../postgres/.env")
+	err := godotenv.Load("./postgres/.env")
 	if err != nil {
 		log.Fatalf("Ошибка загрузки файла .env: %v", err)
 	}
