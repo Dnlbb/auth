@@ -25,9 +25,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Ошибка загрузки файла .env: %v", err)
 	}
-	lis, err := net.Listen("tcp", "127.0.0.1:50051")
+	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatal("failed to listen: 50051 ")
+		log.Fatal(":50051 ")
 	}
 
 	storage, err := dao.InitStorage()
