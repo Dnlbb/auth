@@ -46,11 +46,15 @@ jobs:
 
       - name: Create .env file
         run: |
-          touch .env
-          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
-          echo "PG_USER=${{ secrets.PG_USER }}" >> .env
-          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env 
-          echo "DB_HOST=postgres-auth" >> .env
+          touch /postgres/.env
+          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> /postgres/.env
+          echo "PG_USER=${{ secrets.PG_USER }}" >> /postgres/.env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> /postgres/.env
+          echo "PG_PORT=${{ secrets.PG_PORT }}" >> /postgres/.env
+          echo "DB_HOST=postgres-auth" >> /postgres/.env
+          echo "MIGRATION_DIR=./migrations" >> /postgres/.env
+          echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  /postgres/.env
+          
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -93,10 +97,14 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DB_HOST=postgres-auth" >> .env
-          echo "PG_DATABASE_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "PG_USER=${{ secrets.DB_USER }}" >> .env
-          echo "PG_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          touch /postgres/.env
+          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> /postgres/.env
+          echo "PG_USER=${{ secrets.PG_USER }}" >> /postgres/.env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> /postgres/.env
+          echo "PG_PORT=${{ secrets.PG_PORT }}" >> /postgres/.env
+          echo "DB_HOST=postgres-auth" >> /postgres/.env
+          echo "MIGRATION_DIR=./migrations" >> /postgres/.env
+          echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  /postgres/.env
 
       - name: Build the migrator image
         run: |
@@ -139,12 +147,17 @@ jobs:
 
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
 
-            echo "DB_HOST=postgres-auth" > .env
-            echo "PG_USER=${{ secrets.PG_USER }}" >> .env
-            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
-            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> .env
-            echo "MIGRATION_DIR=./migrations" >> .env
-
+                  - name: Create .env file
+       
+            touch /postgres/.env
+            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> /postgres/.env
+            echo "PG_USER=${{ secrets.PG_USER }}" >> /postgres/.env
+            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> /postgres/.env
+            echo "PG_PORT=${{ secrets.PG_PORT }}" >> /postgres/.env
+            echo "DB_HOST=postgres-auth" >> /postgres/.env
+            echo "MIGRATION_DIR=./migrations" >> /postgres/.env
+            echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  /postgres/.env
+          
             # Удалить существующий контейнер db_migrator, если он уже запущен
             docker stop db_migrator || true
             docker rm db_migrator || true
