@@ -56,6 +56,8 @@ type QueryExecer interface {
 type Pinger interface {
 	Ping(ctx context.Context) error
 }
+
+// DB интерфейс для работы с бд
 type DB interface {
 	SQLExecer
 	Pinger

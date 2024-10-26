@@ -8,10 +8,10 @@ import (
 	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 )
 
-func (s service) DeleteUser(ctx context.Context, userId models.DeleteID) error {
+func (s service) DeleteUser(ctx context.Context, userID models.DeleteID) error {
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		var errTx error
-		errTx = s.storage.Delete(ctx, userId)
+		errTx = s.storage.Delete(ctx, userID)
 		if errTx != nil {
 			return errTx
 		}

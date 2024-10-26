@@ -2,7 +2,7 @@ package pgconverter
 
 import (
 	"github.com/Dnlbb/auth/internal/models"
-	"github.com/Dnlbb/auth/internal/repository/postgres/models"
+	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 )
 
 // Repo2ServiceUser конвертируем user из модели, с которой работает postgresql в модель, с которой будет работать service.

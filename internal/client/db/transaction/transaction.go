@@ -14,6 +14,7 @@ type manager struct {
 	db db.Transactor
 }
 
+// NewTransactionManager конструктор менеджера транзакций.
 func NewTransactionManager(db db.Transactor) db.TxManager {
 	return &manager{db: db}
 }

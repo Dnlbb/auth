@@ -13,7 +13,7 @@ func main() {
 	a, err := app.NewApp(ctx)
 
 	if err != nil {
-		log.Fatalf("failed to create app: %w", err)
+		log.Fatalf("failed to create app")
 	}
 	err = a.Run()
 	if err != nil {

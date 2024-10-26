@@ -8,6 +8,7 @@ import (
 	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
 )
 
+// Create реализация сгенерированного grpc
 func (i *Implementation) Create(ctx context.Context, req *authv1.CreateRequest) (*authv1.CreateResponse, error) {
 	user := converter.ProtoAddUser2AddUser(req)
 

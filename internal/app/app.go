@@ -14,11 +14,13 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+// App структура сервисной модели
 type App struct {
 	serviceProvider *serviceProvider
 	grpcServer      *grpc.Server
 }
 
+// NewApp конструктор для сервисной модели
 func NewApp(ctx context.Context) (*App, error) {
 	a := &App{}
 	err := a.initDeps(ctx)
@@ -45,7 +47,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) initConfig(ctx context.Context) error {
+func (a *App) initConfig(_ context.Context) error {
 	err := config.LoadEnv("auth.env")
 	if err != nil {
 		return err
@@ -53,7 +55,7 @@ func (a *App) initConfig(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) initServiceProvider(ctx context.Context) error {
+func (a *App) initServiceProvider(_ context.Context) error {
 	a.serviceProvider = newServiceProvider()
 	return nil
 }
@@ -68,6 +70,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	return nil
 }
 
+// Run старт
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()

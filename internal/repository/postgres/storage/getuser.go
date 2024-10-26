@@ -8,19 +8,19 @@ import (
 	"github.com/Dnlbb/auth/internal/client/db"
 	"github.com/Dnlbb/auth/internal/models"
 	pgconverter "github.com/Dnlbb/auth/internal/repository/postgres/converter"
-	"github.com/Dnlbb/auth/internal/repository/postgres/models"
+	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
 
-// GetUser получаем пользователя из базы postgresql.
+// GetUser получаем пользователя из базы postgresql
 func (s *storage) GetUser(ctx context.Context, params models.GetUserParams) (*models.User, error) {
 	var pgUser pgmodels.User
 	var err error
-	query := sq.Select(IdColumn, UsernameColumn, EmailColumn, RoleColumn, CreateTimeColumn, UpdateTimeColumn).From(UserTableName).PlaceholderFormat(sq.Dollar)
+	query := sq.Select(IDColumn, UsernameColumn, EmailColumn, RoleColumn, CreateTimeColumn, UpdateTimeColumn).From(UserTableName).PlaceholderFormat(sq.Dollar)
 	switch {
 	case params.ID != nil:
-		query = query.Where(sq.Eq{IdColumn: *params.ID})
+		query = query.Where(sq.Eq{IDColumn: *params.ID})
 	case params.Username != nil:
 		query = query.Where(sq.Eq{UsernameColumn: *params.Username})
 	default:

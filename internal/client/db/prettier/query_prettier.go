@@ -6,11 +6,12 @@ import (
 	"strings"
 )
 
+// PlaceholderDollar плейсхолдер постгреса.
 const (
-	PlaceholderDollar   = "$"
-	PlaceholderQuestion = "?"
+	PlaceholderDollar = "$"
 )
 
+// Pretty приятное логирование
 func Pretty(query string, placeholder string, args ...any) string {
 	for i, param := range args {
 		var value string

@@ -7,6 +7,7 @@ import (
 	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 )
 
+// StorageInterface интерфейс для работы с хранилищем.
 type StorageInterface interface {
 	Save(ctx context.Context, user models.UserAdd) (int64, error)
 	Update(ctx context.Context, update models.UpdateUser) error

@@ -11,6 +11,7 @@ type service struct {
 	txManager db.TxManager
 }
 
+// NewService конструктор сервиса
 func NewService(storage repoInterface.StorageInterface,
 	txManager db.TxManager) servinterfaces.AuthService {
 	return &service{storage: storage,

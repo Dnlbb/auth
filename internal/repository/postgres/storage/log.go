@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Dnlbb/auth/internal/client/db"
-	"github.com/Dnlbb/auth/internal/repository/postgres/models"
+	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 	sq "github.com/Masterminds/squirrel"
 )
 

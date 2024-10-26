@@ -11,28 +11,34 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Role роль юзера
 type Role int32
 
+// RoleUnspecified роль юзера
 const (
-	RoleUnspecified int32 = 0
-	USER            int32 = 1
-	ADMIN           int32 = 2
+	RoleUnspecified    int32 = 0
+	USER               int32 = 1
+	ADMIN              int32 = 2
+	StrRoleUnspecified       = "ROLE_UNSPECIFIED"
+	StrUser                  = "USER"
+	StrAdmin                 = "ADMIN"
 )
 
 // Role2String Определяем функцию конвертации из строки в Role
 func Role2String(roleStr string) (authv1.Role, error) {
 	switch roleStr {
-	case "ROLE_UNSPECIFIED":
+	case StrRoleUnspecified:
 		return authv1.Role(RoleUnspecified), nil
-	case "USER":
+	case StrUser:
 		return authv1.Role(USER), nil
-	case "ADMIN":
+	case StrAdmin:
 		return authv1.Role(ADMIN), nil
 	default:
 		return authv1.Role(RoleUnspecified), fmt.Errorf("некорректное значение роли: %s", roleStr)
 	}
 }
 
+// UserModel2ProtoUserProfile конвертер сервис модель -> grpc ответ
 func UserModel2ProtoUserProfile(user models.User) *authv1.GetResponse {
 	userRole, err := Role2String(user.Role)
 	if err != nil {
@@ -51,9 +57,12 @@ func UserModel2ProtoUserProfile(user models.User) *authv1.GetResponse {
 	}
 }
 
+// toTimestampProto конвертация времени
 func toTimestampProto(time time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(time)
 }
+
+// ProtoRole2ModelsRole конвертация роли юзера
 func ProtoRole2ModelsRole(role int32) (string, error) {
 	switch role {
 	case 0:
@@ -66,6 +75,7 @@ func ProtoRole2ModelsRole(role int32) (string, error) {
 	return "", errors.New("role unspecified")
 }
 
+// ProtoAddUser2AddUser конвертер grpc -> сервисная модель добавления пользователя
 func ProtoAddUser2AddUser(addUser *authv1.CreateRequest) models.UserAdd {
 	role, err := ProtoRole2ModelsRole(int32(addUser.GetUser().GetRole()))
 	if err != nil {
@@ -78,6 +88,7 @@ func ProtoAddUser2AddUser(addUser *authv1.CreateRequest) models.UserAdd {
 		Password: addUser.Password}
 }
 
+// GetUserParamsReq2Params конвертер запроса grpc -> в сервисную модель GetUserParams
 func GetUserParamsReq2Params(userParams *authv1.GetRequest) (*models.GetUserParams, error) {
 	var params models.GetUserParams
 	switch nameOrID := userParams.NameOrId.(type) {
@@ -91,6 +102,7 @@ func GetUserParamsReq2Params(userParams *authv1.GetRequest) (*models.GetUserPara
 	return &params, nil
 }
 
+// ProtoUpdateUser2UpdateUser конвертер запроса grpc -> в сервисную модель UpdateUser
 func ProtoUpdateUser2UpdateUser(updateProto *authv1.UpdateRequest) *models.UpdateUser {
 	return &models.UpdateUser{ID: updateProto.GetId(),
 		Name:  updateProto.Name.Value,

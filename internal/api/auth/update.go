@@ -9,6 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// Update реализация сгенерированного grpc
 func (i *Implementation) Update(ctx context.Context, req *authv1.UpdateRequest) (*emptypb.Empty, error) {
 	updateUser := converter.ProtoUpdateUser2UpdateUser(req)
 	err := i.authService.UpdateUser(ctx, *updateUser)

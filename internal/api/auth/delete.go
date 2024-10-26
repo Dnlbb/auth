@@ -9,6 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// Delete реализация сгенерированного grpc
 func (i *Implementation) Delete(ctx context.Context, req *authv1.DeleteRequest) (*emptypb.Empty, error) {
 	idDel := models.DeleteID(req.GetId())
 	err := i.authService.DeleteUser(ctx, idDel)

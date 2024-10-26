@@ -5,8 +5,9 @@ import (
 	"github.com/Dnlbb/auth/internal/repository/repoInterface"
 )
 
+// IdColumn константы для обращений к базе
 const (
-	IdColumn         = "id"
+	IDColumn         = "id"
 	UsernameColumn   = "name"
 	EmailColumn      = "email"
 	RoleColumn       = "role"

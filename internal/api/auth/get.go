@@ -8,6 +8,7 @@ import (
 	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
 )
 
+// Get реализация сгенерированного grpc
 func (i *Implementation) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
 	params, err := converter.GetUserParamsReq2Params(req)
 	if err != nil {
