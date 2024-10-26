@@ -10,9 +10,9 @@ RUN chmod +x /bin/goose
 
 WORKDIR /root
 
-ADD ./postgres/migrations/*.sql migrations/
-ADD ./postgres/migration.sh .
-ADD ./postgres/.env .
+ADD ./db/migrations/*.sql ./db/migrations/
+ADD ./deploy/migration.sh .
+ADD ./auth.env .
 
 RUN chmod +x migration.sh
 

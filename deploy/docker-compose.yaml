@@ -1,3 +1,4 @@
+
 volumes:
   postgres_volume:
 
@@ -6,21 +7,20 @@ services:
   postgres-auth:
     container_name: postgres_container_auth
     image: postgres:17.0-alpine3.20
-    environment:
-      - "POSTGRES_DB=${PG_DATABASE_NAME}"
-      - "POSTGRES_USER=${PG_USER}"
-      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
     ports:
-      - "${PG_PORT}:5432"
+      - "54321:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/auth
+    env_file:
+      - "../auth.env"
 
   migrator:
     build:
-      context: .
-      dockerfile: migration.Dockerfile
+      context: ..
+      dockerfile: ./deploy/migration.Dockerfile
     restart: on-failure
     environment:
       DB_HOST: postgres-auth
-        
+    env_file:
+      - "../auth.env"
 

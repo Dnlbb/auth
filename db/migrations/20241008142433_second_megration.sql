@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 
-CREATE TABLE users    (
-    id serial primary key,
+CREATE TABLE users  (
+    id BIGSERIAL primary key,
     name VARCHAR(20) not null,
     email VARCHAR(30) not null,
     role VARCHAR(20) not null,
