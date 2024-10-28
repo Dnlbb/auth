@@ -23,8 +23,7 @@ type App struct {
 // NewApp конструктор для сервисной модели
 func NewApp(ctx context.Context) (*App, error) {
 	a := &App{}
-	err := a.initDeps(ctx)
-	if err != nil {
+	if err := a.initDeps(ctx); err != nil {
 		return nil, fmt.Errorf("init deps: %w", err)
 	}
 
@@ -48,10 +47,10 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initConfig(_ context.Context) error {
-	err := config.LoadEnv("auth.env")
-	if err != nil {
+	if err := config.LoadEnv("auth.env"); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -65,7 +64,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	authv1.RegisterAuthServer(a.grpcServer, a.serviceProvider.GetAuthImpl(ctx))
+	authv1.RegisterAuthServer(a.grpcServer, a.serviceProvider.GetAuthController(ctx))
 
 	return nil
 }
@@ -76,20 +75,22 @@ func (a *App) Run() error {
 		closer.CloseAll()
 		closer.Wait()
 	}()
+
 	return a.runGRPCServer()
 }
 
 func (a *App) runGRPCServer() error {
 	log.Printf("starting gRPC server on %s", a.serviceProvider.GetGRPCConfig().Address())
 
-	list, err := net.Listen("tcp", a.serviceProvider.GetGRPCConfig().Address())
+	listener, err := net.Listen("tcp", a.serviceProvider.GetGRPCConfig().Address())
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	err = a.grpcServer.Serve(list)
+	err = a.grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
 	return nil
 }

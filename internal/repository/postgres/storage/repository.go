@@ -5,19 +5,6 @@ import (
 	"github.com/Dnlbb/auth/internal/repository/repoInterface"
 )
 
-// IdColumn константы для обращений к базе
-const (
-	IDColumn         = "id"
-	UsernameColumn   = "name"
-	EmailColumn      = "email"
-	RoleColumn       = "role"
-	CreateTimeColumn = "created_at"
-	UpdateTimeColumn = "updated_at"
-	QueryName        = "name"
-	UserTableName    = "users"
-	UserLogName      = "log"
-)
-
 type storage struct {
 	db db.Client
 }

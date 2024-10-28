@@ -8,10 +8,10 @@ import (
 
 // LoadEnv загружаем переменные окружения из файла auth.env в окружение проекта.
 func LoadEnv(path2env string) error {
-	err := godotenv.Load(path2env)
-	if err != nil {
+	if err := godotenv.Load(path2env); err != nil {
 		return fmt.Errorf("error loading auth.env file: %w, path to env: %s", err, path2env)
 	}
+
 	return nil
 }
 

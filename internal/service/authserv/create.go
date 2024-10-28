@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"github.com/Dnlbb/auth/internal/models"
-	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 )
 
-func (s service) AddUser(ctx context.Context, user models.UserAdd) (*int64, error) {
+func (s service) Create(ctx context.Context, user models.User) (*int64, error) {
 	var id int64
+
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		var errTx error
 		id, errTx = s.storage.Save(ctx, user)
@@ -17,7 +17,7 @@ func (s service) AddUser(ctx context.Context, user models.UserAdd) (*int64, erro
 			return errTx
 		}
 
-		errTx = s.storage.Log(ctx, pgmodels.SAVE)
+		errTx = s.storage.Log(ctx, models.SAVE)
 		if errTx != nil {
 			return errTx
 		}
@@ -26,7 +26,8 @@ func (s service) AddUser(ctx context.Context, user models.UserAdd) (*int64, erro
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("error when saving the user: %w", err)
+		return nil, fmt.Errorf("user creation error: %w", err)
 	}
+
 	return &id, nil
 }

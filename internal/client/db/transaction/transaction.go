@@ -24,6 +24,7 @@ func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn db.Han
 	if ok {
 		return fn(ctx)
 	}
+
 	tx, err = m.db.BeginTx(ctx, opts)
 	if err != nil {
 		return fmt.Errorf("can't start transaction: %w", err)
@@ -42,14 +43,15 @@ func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn db.Han
 			}
 			return
 		}
+
 		if errors.Is(err, nil) {
 			err = tx.Commit(ctx)
 			if err != nil {
 				err = errors.Wrap(err, "tx commit failed")
 			}
 		}
-
 	}()
+
 	if err = fn(ctx); err != nil {
 		err = errors.Wrap(err, "failed executing code inside transaction")
 	}
@@ -60,5 +62,6 @@ func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn db.Han
 
 func (m *manager) ReadCommitted(ctx context.Context, f db.Handler) error {
 	txOpts := pgx.TxOptions{IsoLevel: pgx.ReadCommitted}
+
 	return m.transaction(ctx, txOpts, f)
 }

@@ -4,20 +4,20 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Dnlbb/auth/internal/converter"
 	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
 )
 
-// Get реализация сгенерированного grpc
-func (i *Implementation) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
-	params, err := converter.GetUserParamsReq2Params(req)
+// Get конвертация grpc структуры в сервисную модель и дальнейшая передача запроса в сервисный слой Get.
+func (c *Controller) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
+	params, err := mappingUserParams(req)
 	if err != nil {
-		return nil, fmt.Errorf("get request params: %v", err)
+		return nil, fmt.Errorf("error when mapping parameters: %w", err)
 	}
-	userProfile, err := i.authService.GetUser(ctx, *params)
+
+	userProfile, err := c.authService.Get(ctx, *params)
 	if err != nil {
-		return nil, fmt.Errorf("get user: %v", err)
+		return nil, fmt.Errorf("error when getUser request: %w", err)
 	}
-	response := converter.UserModel2ProtoUserProfile(*userProfile)
-	return response, nil
+
+	return toProtoUserProfile(*userProfile), nil
 }

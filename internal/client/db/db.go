@@ -13,6 +13,14 @@ type Client interface {
 	Close() error
 }
 
+// DB интерфейс для работы с бд
+type DB interface {
+	SQLExecer
+	Pinger
+	Transactor
+	Close()
+}
+
 // Query обертка над запросом, хранящая имя запроса и сам запрос
 // имя запроса используется для логирования и потенциально может использоваться еще где-то, например в трейсинге.
 type Query struct {
@@ -55,12 +63,4 @@ type QueryExecer interface {
 // Pinger интерфейс для проверки соединения с бд
 type Pinger interface {
 	Ping(ctx context.Context) error
-}
-
-// DB интерфейс для работы с бд
-type DB interface {
-	SQLExecer
-	Pinger
-	Transactor
-	Close()
 }

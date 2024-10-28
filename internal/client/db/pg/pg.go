@@ -60,6 +60,7 @@ func (p *pg) ScanAllContext(ctx context.Context, dest interface{}, query db.Quer
 	if err != nil {
 		return err
 	}
+
 	return pgxscan.ScanAll(dest, rows)
 }
 
@@ -85,11 +86,10 @@ func (p *pg) QueryRowContext(ctx context.Context, q db.Query, args ...interface{
 	return p.dbc.QueryRow(ctx, q.QueryRow, args...)
 }
 
-func logQuery(ctx context.Context, q db.Query, args ...interface{}) {
-	prettyQuery := prettier.Pretty(q.QueryRow, prettier.PlaceholderDollar, args...)
-	log.Println(
-		ctx,
-		fmt.Sprintf("sql: %s", q.Name),
+func logQuery(_ context.Context, q db.Query, args ...interface{}) {
+	prettyQuery := prettier.Pretty(q.QueryRow, "$", args...)
+
+	log.Printf(fmt.Sprintf("sql: %s", q.Name),
 		fmt.Sprintf("query: %s", prettyQuery),
 	)
 }

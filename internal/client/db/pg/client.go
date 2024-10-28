@@ -18,6 +18,7 @@ func New(ctx context.Context, dsn string) (db.Client, error) {
 	if err != nil {
 		return nil, errors.Errorf("failed to connect to db: %v", err)
 	}
+
 	return &pgClient{
 		masterDBC: &pg{dbc: dbc},
 	}, nil

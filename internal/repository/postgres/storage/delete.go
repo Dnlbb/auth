@@ -15,10 +15,17 @@ func (s *storage) Delete(ctx context.Context, id models.DeleteID) error {
 		Name:     "Delete user",
 		QueryRow: "DELETE FROM users WHERE id = $1",
 	}
-	_, err := s.db.DB().ExecContext(ctx, q, id)
+
+	rows, err := s.db.DB().ExecContext(ctx, q, id)
 	if err != nil {
 		return fmt.Errorf("error deleting user into database: %w", err)
 	}
+
+	if rowsAffected := rows.RowsAffected(); rowsAffected == 0 {
+		return fmt.Errorf("error: such user does not exist")
+	}
+
 	log.Printf("Deleted user: %v", id)
+
 	return nil
 }

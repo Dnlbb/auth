@@ -7,41 +7,51 @@ import (
 
 	"github.com/Dnlbb/auth/internal/client/db"
 	"github.com/Dnlbb/auth/internal/models"
-	pgconverter "github.com/Dnlbb/auth/internal/repository/postgres/converter"
-	pgmodels "github.com/Dnlbb/auth/internal/repository/postgres/models"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
 
 // GetUser получаем пользователя из базы postgresql
 func (s *storage) GetUser(ctx context.Context, params models.GetUserParams) (*models.User, error) {
-	var pgUser pgmodels.User
-	var err error
-	query := sq.Select(IDColumn, UsernameColumn, EmailColumn, RoleColumn, CreateTimeColumn, UpdateTimeColumn).From(UserTableName).PlaceholderFormat(sq.Dollar)
+	var (
+		user models.User
+		err  error
+	)
+
+	query := sq.Select("id",
+		"name",
+		"email",
+		"role",
+		"created_at",
+		"updated_at",
+	).From("users")
+
 	switch {
 	case params.ID != nil:
-		query = query.Where(sq.Eq{IDColumn: *params.ID})
+		query = query.Where(sq.Eq{"id": *params.ID})
 	case params.Username != nil:
-		query = query.Where(sq.Eq{UsernameColumn: *params.Username})
-	default:
-		return nil, fmt.Errorf("error: ID and USERNAME is null")
+		query = query.Where(sq.Eq{"name": *params.Username})
 	}
+
+	query = query.PlaceholderFormat(sq.Dollar)
+
 	sqlQuery, args, err := query.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("error building sql query: %w", err)
 	}
+
 	q := db.Query{
 		Name:     "Get user",
 		QueryRow: sqlQuery,
 	}
 
-	err = s.db.DB().ScanOneContext(ctx, &pgUser, q, args...)
+	err = s.db.DB().ScanOneContext(ctx, &user, q, args...)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("пользователя не существует")
+		return nil, fmt.Errorf("error: the user does not exist %w", err)
 	} else if err != nil {
-		return nil, fmt.Errorf("ошибка при обращении в базу для получения профиля пользователя: %v", err)
+		return nil, fmt.Errorf("error when accessing the database to get a user profile: %w", err)
 	}
-	user := pgconverter.Repo2ServiceUser(pgUser)
+
 	return &user, nil
 }
