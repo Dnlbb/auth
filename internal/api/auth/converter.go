@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	StrRoleUnspecified = "ROLE_UNSPECIFIED"
-	StrUser            = "USER"
-	StrAdmin           = "ADMIN"
+	strRoleUnspecified = "ROLE_UNSPECIFIED"
+	strUser            = "USER"
+	strAdmin           = "ADMIN"
 )
 
 func mappingUserParams(userParams *authv1.GetRequest) (*models.GetUserParams, error) {
@@ -29,11 +29,11 @@ func mappingUserParams(userParams *authv1.GetRequest) (*models.GetUserParams, er
 func toModelRole(role authv1.Role) string {
 	switch role {
 	case authv1.Role_ROLE_UNSPECIFIED:
-		return StrRoleUnspecified
+		return strRoleUnspecified
 	case authv1.Role_ADMIN:
-		return StrAdmin
+		return strAdmin
 	case authv1.Role_USER:
-		return StrUser
+		return strUser
 	}
 
 	return "ROLE_UNSPECIFIED"
@@ -74,11 +74,11 @@ func toUpdateUser(update *authv1.UpdateRequest) *models.User {
 // Role2String Определяем функцию конвертации из строки в Role
 func role2String(roleStr string) authv1.Role {
 	switch roleStr {
-	case StrRoleUnspecified:
+	case strRoleUnspecified:
 		return authv1.Role_ROLE_UNSPECIFIED
-	case StrUser:
+	case strUser:
 		return authv1.Role_USER
-	case StrAdmin:
+	case strAdmin:
 		return authv1.Role_ADMIN
 	}
 	return authv1.Role_ROLE_UNSPECIFIED
