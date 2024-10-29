@@ -1,7 +1,7 @@
 FROM golang:1.22.5-alpine AS builder
 
 # Копируем все файлы проекта
-COPY . /github.com/Dnlbb/auth/
+COPY .. /github.com/Dnlbb/auth/
 WORKDIR /github.com/Dnlbb/auth/
 
 # Скачиваем зависимости
@@ -17,7 +17,7 @@ WORKDIR /root/cmd
 
 # Копируем бинарник auth-server из builder стадии
 COPY --from=builder /github.com/Dnlbb/auth/bin/auth-server ./cmd/
-COPY --from=builder /github.com/Dnlbb/auth/postgres/.env ./postgres/.env
+COPY --from=builder /github.com/Dnlbb/auth/auth.env ./postgres/.env
 
 
 

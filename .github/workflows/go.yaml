@@ -39,22 +39,22 @@ jobs:
           args: --timeout=30m --config=./.golangci.pipeline.yaml
 
   image-build-and-push:
+    if: false
     runs-on: ubuntu-latest
     needs: [ build-and-test, linter ]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create .env file
+      - name: Create auth.env file
         run: |
-          mkdir -p ./postgres 
-          touch ./postgres/.env
-          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ./postgres/.env
-          echo "PG_USER=${{ secrets.PG_USER }}" >> ./postgres/.env
-          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> ./postgres/.env
-          echo "PG_PORT=${{ secrets.PG_PORT }}" >> ./postgres/.env
-          echo "DB_HOST=postgres-auth" >> ./postgres/.env
-          echo "MIGRATION_DIR=./migrations" >> ./postgres/.env
-          echo "DSN=host=${{ secrets.SERVER_POSTGRE_HOST }} port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  ./postgres/.env
+          touch auth.env
+          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> auth.env
+          echo "PG_USER=${{ secrets.PG_USER }}" >> auth.env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> auth.env
+          echo "PG_PORT=${{ secrets.PG_PORT }}" >> auth.env
+          echo "DB_HOST=postgres-auth" >> auth.env
+          echo "MIGRATION_DIR=./migrations" >> auth.env
+          echo "DSN=host=${{ secrets.SERVER_POSTGRE_HOST }} port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  auth.env
 
 
       - name: Set up Docker Buildx
@@ -70,6 +70,7 @@ jobs:
           docker buildx build --no-cache --push --tag ${{ secrets.REGISTRY }}/${{ secrets.IMAGE_NAME }}:$TAG_NAME -f Dockerfile .
 
   deploy-image:
+    if: false
     runs-on: ubuntu-latest
     needs: [ image-build-and-push, build-and-push-migrator, deploy-postgres ]
     steps:
@@ -89,6 +90,7 @@ jobs:
             docker run -d -p 50051:50051 --name ${{ secrets.CONTAINER_NAME }} -t ${{ secrets.REGISTRY }}/${{ secrets.IMAGE_NAME }}:$TAG_NAME
 
   build-and-push-migrator:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -96,17 +98,16 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} ${{ secrets.REGISTRY }} --password-stdin
 
-      - name: Create .env file
+      - name: Create auth.env file
         run: |
-          mkdir -p ./postgres 
-          touch ./postgres/.env
-          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ./postgres/.env
-          echo "PG_USER=${{ secrets.PG_USER }}" >> ./postgres/.env
-          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> ./postgres/.env
-          echo "PG_PORT=${{ secrets.PG_PORT }}" >> ./postgres/.env
-          echo "DB_HOST=postgres-auth" >> ./postgres/.env
-          echo "MIGRATION_DIR=./migrations" >> ./postgres/.env
-          echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  ./postgres/.env
+          touch auth.env
+          echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> auth.env
+          echo "PG_USER=${{ secrets.PG_USER }}" >> auth.env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> auth.env
+          echo "PG_PORT=${{ secrets.PG_PORT }}" >> auth.env
+          echo "DB_HOST=postgres-auth" >> auth.env
+          echo "MIGRATION_DIR=./migrations" >> auth.env
+          echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  auth.env
 
       - name: Build the migrator image
         run: |
@@ -119,6 +120,7 @@ jobs:
         run: docker push ${{ secrets.REGISTRY }}/migrator:latest
 
   deploy-postgres:
+    if: false
     runs-on: ubuntu-latest
     needs: [build-and-push-migrator]
     steps:
@@ -151,15 +153,15 @@ jobs:
 
               
             
-            mkdir -p ./postgres  
-            touch ./postgres/.env
-            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> ./postgres/.env
-            echo "PG_USER=${{ secrets.PG_USER }}" >> ./postgres/.env
-            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> ./postgres/.env
-            echo "PG_PORT=${{ secrets.PG_PORT }}" >> ./postgres/.env
-            echo "DB_HOST=postgres-auth" >> ./postgres/.env
-            echo "MIGRATION_DIR=./migrations" >> ./postgres/.env
-            echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  ./postgres/.env
+             
+            touch auth.env
+            echo "PG_DATABASE_NAME=${{ secrets.PG_DATABASE_NAME }}" >> auth.env
+            echo "PG_USER=${{ secrets.PG_USER }}" >> auth.env
+            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> auth.env
+            echo "PG_PORT=${{ secrets.PG_PORT }}" >> auth.env
+            echo "DB_HOST=postgres-auth" >> auth.env
+            echo "MIGRATION_DIR=./migrations" >> auth.env
+            echo "DSN=postgres-auth port=${{ secrets.PG_PORT }} dbname=${{ secrets.PG_DATABASE_NAME }} user=${{ secrets.PG_USER }} password=${{ secrets.PG_PASSWORD }} sslmode=disable" >>  auth.env
             
          
             docker stop db_migrator || true
@@ -168,5 +170,5 @@ jobs:
             
             docker run --rm --name db_migrator \
               --network my_network \
-              --env-file .env \
+              --env-file auth.env \
               ${{ secrets.REGISTRY }}/migrator:latest

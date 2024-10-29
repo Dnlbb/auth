@@ -46,6 +46,10 @@ linters:
 
 issues:
   exclude-use-default: false
+  exclude-rules:
+    - linters:
+        - revive
+      text: "don't use MixedCaps in package name"
   exclude:
     - G104 # _ instead of err checks
     - exported func .* returns unexported type .*, which can be annoying to use

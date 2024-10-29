@@ -1,4 +1,9 @@
+include auth.env
+export
+
 LOCAL_BIN:=$(CURDIR)/bin
+GOOSE_CMD=${LOCAL_BIN}/goose
+
 
 install-golangci-lint:
 	$(LOCAL_BIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -10,9 +15,13 @@ lint:
 
 
 install-deps:
-	export GOBIN=/home/dnl/chat/auth/bin && \
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1 && \
 	go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+	@[ -f ${LOCAL_BIN}/goose ] || { \
+      		echo "Installing goose..."; \
+      		GOBIN=${LOCAL_BIN} go install github.com/pressly/goose/v3/cmd/goose@v3.14.0; \
+      }
+
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
@@ -37,5 +46,25 @@ build:
 	GOOS=linux GOARCH=amd64 go build -o auth_linux cmd/main.go
 
 
+local-migration-status:
+	${GOOSE_CMD} -dir ${MIGRATION_DIR} postgres ${PG_DSN} status -v
+
+local-migration-up:
+	${GOOSE_CMD} -dir ${MIGRATION_DIR} postgres ${PG_DSN} up -v
+
+local-migration-down:
+	${GOOSE_CMD} -dir ${MIGRATION_DIR} postgres ${PG_DSN} down -v
+
+local-migration-create:
+	@if [ -z "$(name)" ]; then \
+		echo "Please provide a migration name, usage: make local-migration-create name=add_table"; \
+		exit 1; \
+	fi
+	${GOOSE_CMD} -dir ${MIGRATION_DIR} create $(name) sql
 
 
+docker-up:
+	docker compose -f ./deploy/docker-compose.yaml up -d
+
+docker-down:
+	docker compose -f ./deploy/docker-compose.yaml down
