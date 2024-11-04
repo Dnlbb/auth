@@ -10,7 +10,6 @@ import (
 	clientMocks "github.com/Dnlbb/auth/internal/client/mocks"
 	"github.com/Dnlbb/auth/internal/models"
 	repoMocks "github.com/Dnlbb/auth/internal/repository/mocks"
-	"github.com/Dnlbb/auth/internal/repository/redis"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
 	"github.com/Dnlbb/auth/internal/service/authserv"
 	"github.com/Dnlbb/platform_common/pkg/db"
@@ -35,7 +34,7 @@ func TestGet(t *testing.T) {
 	var (
 		ctx             = context.Background()
 		mc              = minimock.NewController(t)
-		errCacheMiss    = redis.ErrUserNotFound
+		errCacheMiss    = models.ErrUserNotFound
 		errCacheGeneric = errors.New("cache error")
 		errLogFailure   = errors.New("log error")
 		errStorage      = errors.New("storage error")

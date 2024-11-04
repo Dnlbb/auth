@@ -8,12 +8,6 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 	redisModels "github.com/Dnlbb/auth/internal/repository/models"
 	"github.com/gomodule/redigo/redis"
-	"github.com/pkg/errors"
-)
-
-var (
-	// ErrUserNotFound нет его в кэше.
-	ErrUserNotFound = errors.New("user not found")
 )
 
 func (c cache) Get(ctx context.Context, params models.GetUserParams) (*models.User, error) {
@@ -31,7 +25,7 @@ func (c cache) Get(ctx context.Context, params models.GetUserParams) (*models.Us
 	}
 
 	if userCache == nil {
-		return nil, ErrUserNotFound
+		return nil, models.ErrUserNotFound
 	}
 
 	var userProfile redisModels.User

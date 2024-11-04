@@ -28,10 +28,12 @@ func toServiceModels(user redismodels.User) (*models.User, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error with time parse CreatedAt")
 	}
+
 	UpdatedAt, err := time.Parse(time.RFC3339, user.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("error with time parse UpdatedAt")
 	}
+
 	id, err := strconv.ParseInt(user.ID, 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("error with parse ID")

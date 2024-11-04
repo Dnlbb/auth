@@ -3,6 +3,7 @@ package authserv
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/Dnlbb/auth/internal/models"
 )
@@ -33,17 +34,15 @@ func (s service) Create(ctx context.Context, user models.User) (*int64, error) {
 	}
 
 	if err = s.cache.Create(ctx, id, user); err != nil {
-		return nil, fmt.Errorf("user add cache error: %w", err)
+		log.Printf("failed to cache user: %v", err)
 	}
 
 	return &id, nil
 }
 
 func validatePass(password string) error {
-	if len(password) < 8 {
-		return fmt.Errorf("password must be at least 8 characters")
-	} else if len(password) > 255 {
-		return fmt.Errorf("password must be at most 255 characters")
+	if len(password) < 8 || len(password) > 255 {
+		return fmt.Errorf("password must be at least 8 characters but no more 255")
 	}
 	return nil
 }
