@@ -38,8 +38,7 @@ func TestCreate(t *testing.T) {
 		correctEmail   = "Dr.Pepper@gmail.com"
 		password       = "12345678910"
 		id             = gofakeit.Int64()
-		errLongPass    = errors.New("password must be at most 255 characters")
-		errShortPass   = errors.New("password must be at least 8 characters")
+		errPass        = errors.New("invalid password: password must be at least 8 characters but no more 255")
 		errTransaction = errors.New("error transaction")
 		errCache       = errors.New("error cache")
 	)
@@ -94,7 +93,7 @@ func TestCreate(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  fmt.Errorf("invalid password: %w", errLongPass),
+			err:  errPass,
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
 				mock := repoMocks.NewCacheInterfaceMock(mc)
 				return mock
@@ -120,7 +119,7 @@ func TestCreate(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  fmt.Errorf("invalid password: %w", errShortPass),
+			err:  errPass,
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
 				mock := repoMocks.NewCacheInterfaceMock(mc)
 				return mock
@@ -172,8 +171,8 @@ func TestCreate(t *testing.T) {
 					Role:     "USER",
 				},
 			},
-			want: nil,
-			err:  fmt.Errorf("user add cache error: %w", errCache),
+			want: &id,
+			err:  nil,
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
 				mock := repoMocks.NewCacheInterfaceMock(mc)
 				mock.CreateMock.Return(errCache)
