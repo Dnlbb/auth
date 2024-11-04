@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"github.com/Dnlbb/auth/internal/client/db"
-	"github.com/Dnlbb/auth/internal/repository/repoInterface"
+	"github.com/Dnlbb/auth/internal/repository/repointerface"
+	"github.com/Dnlbb/platform_common/pkg/db"
 )
 
 type storage struct {
@@ -10,6 +10,6 @@ type storage struct {
 }
 
 // NewPostgresRepo инициализируем хранилище postgresql и приводим его к типу интерфейса StorageInterface.
-func NewPostgresRepo(db db.Client) repoInterface.StorageInterface {
+func NewPostgresRepo(db db.Client) repointerface.StorageInterface {
 	return &storage{db: db}
 }

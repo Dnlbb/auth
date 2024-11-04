@@ -9,10 +9,7 @@ import (
 
 // Get конвертация grpc структуры в сервисную модель и дальнейшая передача запроса в сервисный слой Get.
 func (c *Controller) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
-	params, err := mappingUserParams(req)
-	if err != nil {
-		return nil, fmt.Errorf("error when mapping parameters: %w", err)
-	}
+	params := mappingUserParams(req)
 
 	userProfile, err := c.authService.Get(ctx, *params)
 	if err != nil {
