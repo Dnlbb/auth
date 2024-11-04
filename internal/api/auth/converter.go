@@ -14,7 +14,7 @@ const (
 	strAdmin           = "ADMIN"
 )
 
-func mappingUserParams(userParams *authv1.GetRequest) *models.GetUserParams {
+func mappingUserParams(userParams *authv1.GetRequest) models.GetUserParams {
 	var params models.GetUserParams
 	switch nameOrID := userParams.NameOrId.(type) {
 	case *authv1.GetRequest_Id:
@@ -23,7 +23,7 @@ func mappingUserParams(userParams *authv1.GetRequest) *models.GetUserParams {
 		params.Username = &nameOrID.Username
 	}
 
-	return &params
+	return params
 }
 
 func toModelRole(role authv1.Role) string {
