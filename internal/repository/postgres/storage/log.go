@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Dnlbb/auth/internal/client/db"
 	"github.com/Dnlbb/auth/internal/models"
+	"github.com/Dnlbb/platform_common/pkg/db"
 	sq "github.com/Masterminds/squirrel"
 )
 

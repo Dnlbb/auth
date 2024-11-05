@@ -5,3 +5,5 @@
 /postgres/bin/goose
 .idea/
 auth.env
+/coverage/coverage.html
+/coverage/coverage.out

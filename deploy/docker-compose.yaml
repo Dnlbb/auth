@@ -1,6 +1,7 @@
 
 volumes:
   postgres_volume:
+  redis-data:
 
 
 services:
@@ -8,7 +9,7 @@ services:
     container_name: postgres_container_auth
     image: postgres:17.0-alpine3.20
     ports:
-      - "54321:5432"
+      - "54322:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/auth
     env_file:
@@ -24,3 +25,10 @@ services:
     env_file:
       - "../auth.env"
 
+  redis:
+    image: redis:7.2.5-alpine3.20
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data

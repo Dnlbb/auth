@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Dnlbb/auth/internal/client/db"
 	"github.com/Dnlbb/auth/internal/models"
+	"github.com/Dnlbb/platform_common/pkg/db"
 )
 
 // Delete удаления пользователя из базы postgresql.

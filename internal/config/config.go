@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -23,4 +24,12 @@ type GRPCConfig interface {
 // PGConfig интерфейс получения DSN для старта хранилища.
 type PGConfig interface {
 	DSN() string
+}
+
+// RedisConfig интерфейс для получения данных для конфига Redis.
+type RedisConfig interface {
+	Address() string
+	ConnectionTimeout() time.Duration
+	MaxIdle() int
+	IdleTimeout() time.Duration
 }

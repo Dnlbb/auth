@@ -6,9 +6,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/Dnlbb/auth/internal/closer"
 	"github.com/Dnlbb/auth/internal/config"
 	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/platform_common/pkg/closer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"

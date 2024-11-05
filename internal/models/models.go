@@ -18,7 +18,7 @@ const (
 type (
 	// User моделька профиля пользователя для сервисного слоя.
 	User struct {
-		ID        int64     `db:"id"`
+		ID        int64     `db:"id" redis:"id"`
 		Name      string    `db:"name"`
 		Email     string    `db:"email"`
 		Password  string    `db:"password"`
@@ -26,7 +26,6 @@ type (
 		CreatedAt time.Time `db:"created_at"`
 		UpdatedAt time.Time `db:"updated_at"`
 	}
-
 	// UserID id пользователя.
 	UserID int64
 
