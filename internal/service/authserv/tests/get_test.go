@@ -77,7 +77,8 @@ func TestGet(t *testing.T) {
 				return mock
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
-				return clientMocks.NewTxManagerMock(mc)
+				mock := clientMocks.NewTxManagerMock(mc)
+				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				return repoMocks.NewStorageInterfaceMock(mc)
@@ -97,28 +98,7 @@ func TestGet(t *testing.T) {
 				return mock
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
-				return clientMocks.NewTxManagerMock(mc)
-			},
-			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
-				return repoMocks.NewStorageInterfaceMock(mc)
-			},
-		},
-		{
-			name: "error case: transaction error storage",
-			args: args{
-				ctx:    ctx,
-				params: models.GetUserParams{ID: &userID},
-			},
-			want: nil,
-			err:  errStorage,
-			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
-				mock := repoMocks.NewCacheInterfaceMock(mc)
-				mock.GetMock.Return(nil, errCacheMiss)
-				return mock
-			},
-			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errStorage)
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
@@ -126,13 +106,13 @@ func TestGet(t *testing.T) {
 			},
 		},
 		{
-			name: "error case: transaction error logging",
+			name: "error case (cache miss): transaction error storage",
 			args: args{
 				ctx:    ctx,
 				params: models.GetUserParams{ID: &userID},
 			},
 			want: nil,
-			err:  errLogFailure,
+			err:  fmt.Errorf("error getting user profile: %w", errStorage),
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
 				mock := repoMocks.NewCacheInterfaceMock(mc)
 				mock.GetMock.Return(nil, errCacheMiss)
@@ -140,21 +120,25 @@ func TestGet(t *testing.T) {
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errLogFailure)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
-				return repoMocks.NewStorageInterfaceMock(mc)
+				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.GetUserMock.Expect(ctx, models.GetUserParams{ID: &userID}).Return(nil, errStorage)
+				return mock
 			},
 		},
 		{
-			name: "error case: transaction error caching",
+			name: "error case (cache miss): transaction error logging",
 			args: args{
 				ctx:    ctx,
 				params: models.GetUserParams{ID: &userID},
 			},
 			want: nil,
-			err:  errCaching,
+			err:  fmt.Errorf("error logging: %w", errLogFailure),
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
 				mock := repoMocks.NewCacheInterfaceMock(mc)
 				mock.GetMock.Return(nil, errCacheMiss)
@@ -162,11 +146,44 @@ func TestGet(t *testing.T) {
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errCaching)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
-				return repoMocks.NewStorageInterfaceMock(mc)
+				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.GetUserMock.Expect(ctx, models.GetUserParams{ID: &userID}).Return(userProfile, nil)
+				mock.LogMock.Expect(ctx, models.GETUSER).Return(errLogFailure)
+				return mock
+			},
+		},
+		{
+			name: "error case (cache miss): transaction error caching",
+			args: args{
+				ctx:    ctx,
+				params: models.GetUserParams{ID: &userID},
+			},
+			want: nil,
+			err:  fmt.Errorf("error caching user profile: %w", errCaching),
+			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
+				mock := repoMocks.NewCacheInterfaceMock(mc)
+				mock.GetMock.Return(nil, errCacheMiss)
+				mock.CreateMock.Expect(ctx, userID, *userProfile).Return(errCaching)
+				return mock
+			},
+			authTxManMock: func(mc *minimock.Controller) db.TxManager {
+				mock := clientMocks.NewTxManagerMock(mc)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
+				return mock
+			},
+			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
+				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.GetUserMock.Expect(ctx, models.GetUserParams{ID: &userID}).Return(userProfile, nil)
+				mock.LogMock.Expect(ctx, models.GETUSER).Return(nil)
+				return mock
 			},
 		},
 	}

@@ -32,18 +32,25 @@ func TestCreate(t *testing.T) {
 	}
 
 	var (
-		ctx            = context.Background()
-		mc             = minimock.NewController(t)
-		name           = gofakeit.Name()
-		correctEmail   = "Dr.Pepper@gmail.com"
-		password       = "12345678910"
-		id             = gofakeit.Int64()
-		errPass        = errors.New("invalid password: password must be at least 8 characters but no more 255")
-		errTransaction = errors.New("error transaction")
-		errCache       = errors.New("error cache")
+		ctx          = context.Background()
+		mc           = minimock.NewController(t)
+		name         = gofakeit.Name()
+		correctEmail = "Dr.Pepper@gmail.com"
+		password     = "12345678910"
+		id           = gofakeit.Int64()
+		errPass      = errors.New("invalid password: password must be at least 8 characters but no more 255")
+		errSave      = errors.New("error save")
+		errLog       = errors.New("error log")
+		errCache     = errors.New("error cache")
+		user         = models.User{
+			Name:     name,
+			Email:    correctEmail,
+			Password: password,
+			Role:     "USER",
+		}
 	)
 
-	defer t.Cleanup(mc.Finish)
+	defer mc.Finish()
 	tests := []struct {
 		name            string
 		args            args
@@ -57,12 +64,7 @@ func TestCreate(t *testing.T) {
 			name: "success case",
 			args: args{
 				ctx: ctx,
-				req: models.User{
-					Name:     name,
-					Email:    correctEmail,
-					Password: password,
-					Role:     "USER",
-				},
+				req: user,
 			},
 			want: &id,
 			err:  nil,
@@ -73,11 +75,15 @@ func TestCreate(t *testing.T) {
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(nil)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.SaveMock.Expect(ctx, user).Return(id, nil)
+				mock.LogMock.Expect(ctx, models.SAVE).Return(nil)
 				return mock
 			},
 		},
@@ -134,7 +140,7 @@ func TestCreate(t *testing.T) {
 			},
 		},
 		{
-			name: "error case: transaction error",
+			name: "error case: save user error",
 			args: args{
 				ctx: ctx,
 				req: models.User{
@@ -145,23 +151,57 @@ func TestCreate(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  fmt.Errorf("user creation error: %w", errTransaction),
+			err:  fmt.Errorf("user creation error: %w", errSave),
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
 				mock := repoMocks.NewCacheInterfaceMock(mc)
 				return mock
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errTransaction)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.SaveMock.Expect(ctx, user).Return(0, errSave)
 				return mock
 			},
 		},
 		{
-			name: "error case: err with cache",
+			name: "error case: err with log",
+			args: args{
+				ctx: ctx,
+				req: models.User{
+					Name:     name,
+					Email:    correctEmail,
+					Password: password,
+					Role:     "USER",
+				},
+			},
+			want: nil,
+			err:  fmt.Errorf("user creation error: %w", errLog),
+			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
+				mock := repoMocks.NewCacheInterfaceMock(mc)
+				return mock
+			},
+			authTxManMock: func(mc *minimock.Controller) db.TxManager {
+				mock := clientMocks.NewTxManagerMock(mc)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
+				return mock
+			},
+			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
+				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.SaveMock.Expect(ctx, user).Return(id, nil)
+				mock.LogMock.Expect(ctx, models.SAVE).Return(errLog)
+				return mock
+			},
+		},
+		{
+			name: "success case: err with cache",
 			args: args{
 				ctx: ctx,
 				req: models.User{
@@ -180,11 +220,15 @@ func TestCreate(t *testing.T) {
 			},
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(nil)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.SaveMock.Expect(ctx, user).Return(id, nil)
+				mock.LogMock.Expect(ctx, models.SAVE).Return(nil)
 				return mock
 			},
 		},

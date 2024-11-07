@@ -30,7 +30,7 @@ func (s service) Get(ctx context.Context, params models.GetUserParams) (*models.
 					return fmt.Errorf("error logging: %w", errTx)
 				}
 
-				if errTx = s.cache.Create(ctx, userProfile.ID, *userProfile); err != nil {
+				if errTx = s.cache.Create(ctx, userProfile.ID, *userProfile); errTx != nil {
 					return fmt.Errorf("error caching user profile: %w", errTx)
 				}
 
@@ -40,8 +40,6 @@ func (s service) Get(ctx context.Context, params models.GetUserParams) (*models.
 			if err != nil {
 				return nil, err
 			}
-
-			return userProfile, nil
 		}
 
 		return nil, fmt.Errorf("error with cache: %w", errCache)

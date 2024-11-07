@@ -5,6 +5,6 @@ import (
 )
 
 var (
-	// ErrUserNotFound нет его в кэше.
+	// ErrUserNotFound нет пользователя в хранилище.
 	ErrUserNotFound = errors.New("user not found")
 )
