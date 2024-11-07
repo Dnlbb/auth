@@ -52,11 +52,15 @@ func TestUpdate(t *testing.T) {
 			err:        nil,
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(nil)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.UpdateMock.Expect(ctx, userUpdate).Return(nil)
+				mock.LogMock.Expect(ctx, models.UPDATE).Return(nil)
 				return mock
 			},
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
@@ -70,11 +74,14 @@ func TestUpdate(t *testing.T) {
 			err:        fmt.Errorf("could not update user: %w", errUpdate),
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errUpdate)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.UpdateMock.Expect(ctx, userUpdate).Return(errUpdate)
 				return mock
 			},
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
@@ -88,11 +95,15 @@ func TestUpdate(t *testing.T) {
 			err:        fmt.Errorf("could not update user: %w", errLog),
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errLog)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.UpdateMock.Expect(ctx, userUpdate).Return(nil)
+				mock.LogMock.Expect(ctx, models.UPDATE).Return(errLog)
 				return mock
 			},
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {

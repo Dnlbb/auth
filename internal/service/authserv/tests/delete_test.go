@@ -26,12 +26,11 @@ func TestDelete(t *testing.T) {
 	)
 
 	var (
-		ctx            = context.Background()
-		mc             = minimock.NewController(t)
-		userID         = models.DeleteID(1)
-		errTransaction = errors.New("transaction error")
-		errDelete      = errors.New("delete error")
-		errLog         = errors.New("log error")
+		ctx       = context.Background()
+		mc        = minimock.NewController(t)
+		userID    = models.DeleteID(1)
+		errDelete = errors.New("delete error")
+		errLog    = errors.New("log error")
 	)
 
 	defer t.Cleanup(mc.Finish)
@@ -50,11 +49,15 @@ func TestDelete(t *testing.T) {
 			err:    nil,
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(nil)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.DeleteMock.Expect(ctx, userID).Return(nil)
+				mock.LogMock.Expect(ctx, models.DELETE).Return(nil)
 				return mock
 			},
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
@@ -68,11 +71,14 @@ func TestDelete(t *testing.T) {
 			err:    fmt.Errorf("error deleting user: %w", errDelete),
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errDelete)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.DeleteMock.Expect(ctx, userID).Return(errDelete)
 				return mock
 			},
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
@@ -86,29 +92,15 @@ func TestDelete(t *testing.T) {
 			err:    fmt.Errorf("error deleting user: %w", errLog),
 			authTxManMock: func(mc *minimock.Controller) db.TxManager {
 				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errLog)
+				mock.ReadCommittedMock.Set(func(ctx context.Context, handler db.Handler) error {
+					return handler(ctx)
+				})
 				return mock
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
-				return mock
-			},
-			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
-				mock := repoMocks.NewCacheInterfaceMock(mc)
-				return mock
-			},
-		},
-		{
-			name:   "error case: transaction error",
-			userID: userID,
-			err:    fmt.Errorf("error deleting user: %w", errTransaction),
-			authTxManMock: func(mc *minimock.Controller) db.TxManager {
-				mock := clientMocks.NewTxManagerMock(mc)
-				mock.ReadCommittedMock.Return(errTransaction)
-				return mock
-			},
-			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
-				mock := repoMocks.NewStorageInterfaceMock(mc)
+				mock.DeleteMock.Expect(ctx, userID).Return(nil)
+				mock.LogMock.Expect(ctx, models.DELETE).Return(errLog)
 				return mock
 			},
 			authCacheMock: func(mc *minimock.Controller) repointerface.CacheInterface {
