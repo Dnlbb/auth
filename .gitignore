@@ -8,4 +8,3 @@ auth.env
 /coverage/coverage.html
 /coverage/coverage.out
 /vendor.protogen
-statik
