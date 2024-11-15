@@ -196,7 +196,7 @@ func TestGet(t *testing.T) {
 			CacheMock := tt.authCacheMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			StorageMock := tt.authStorageMock(mc)
-			service := authserv.NewService(StorageMock, TxManMock, CacheMock)
+			service := authserv.NewService(StorageMock, TxManMock, CacheMock, nil)
 
 			result, err := service.Get(tt.args.ctx, tt.args.params)
 			if tt.err != nil {

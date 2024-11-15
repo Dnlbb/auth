@@ -9,6 +9,8 @@ import (
 
 	clientMocks "github.com/Dnlbb/auth/internal/client/mocks"
 	"github.com/Dnlbb/auth/internal/models"
+	"github.com/Dnlbb/auth/internal/producer"
+	"github.com/Dnlbb/auth/internal/producer/mocks"
 	repoMocks "github.com/Dnlbb/auth/internal/repository/mocks"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
 	"github.com/Dnlbb/auth/internal/service/authserv"
@@ -21,9 +23,10 @@ import (
 func TestCreate(t *testing.T) {
 	t.Parallel()
 	type (
-		AuthCacheMockFunc   func(mc *minimock.Controller) repointerface.CacheInterface
-		AuthTxManMockFunc   func(mc *minimock.Controller) db.TxManager
-		AuthStorageMockFunc func(mc *minimock.Controller) repointerface.StorageInterface
+		AuthCacheMockFunc    func(mc *minimock.Controller) repointerface.CacheInterface
+		AuthTxManMockFunc    func(mc *minimock.Controller) db.TxManager
+		AuthStorageMockFunc  func(mc *minimock.Controller) repointerface.StorageInterface
+		AuthProducerMockFunc func(mc *minimock.Controller) producer.Producer
 	)
 
 	type args struct {
@@ -32,6 +35,8 @@ func TestCreate(t *testing.T) {
 	}
 
 	var (
+		part         = int32(1)
+		offset       = int64(3)
 		ctx          = context.Background()
 		mc           = minimock.NewController(t)
 		name         = gofakeit.Name()
@@ -52,13 +57,14 @@ func TestCreate(t *testing.T) {
 
 	defer mc.Finish()
 	tests := []struct {
-		name            string
-		args            args
-		want            *int64
-		err             error
-		authCacheMock   AuthCacheMockFunc
-		authTxManMock   AuthTxManMockFunc
-		authStorageMock AuthStorageMockFunc
+		name             string
+		args             args
+		want             *int64
+		err              error
+		authCacheMock    AuthCacheMockFunc
+		authTxManMock    AuthTxManMockFunc
+		authStorageMock  AuthStorageMockFunc
+		authProducerMock AuthProducerMockFunc
 	}{
 		{
 			name: "success case",
@@ -84,6 +90,11 @@ func TestCreate(t *testing.T) {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
 				mock.SaveMock.Expect(ctx, user).Return(id, nil)
 				mock.LogMock.Expect(ctx, models.SAVE).Return(nil)
+				return mock
+			},
+			authProducerMock: func(mc *minimock.Controller) producer.Producer {
+				mock := mocks.NewProducerMock(mc)
+				mock.SendMessageMock.Return(part, offset, nil)
 				return mock
 			},
 		},
@@ -112,6 +123,10 @@ func TestCreate(t *testing.T) {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
 				return mock
 			},
+			authProducerMock: func(mc *minimock.Controller) producer.Producer {
+				mock := mocks.NewProducerMock(mc)
+				return mock
+			},
 		},
 		{
 			name: "error case: short password",
@@ -136,6 +151,10 @@ func TestCreate(t *testing.T) {
 			},
 			authStorageMock: func(mc *minimock.Controller) repointerface.StorageInterface {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
+				return mock
+			},
+			authProducerMock: func(mc *minimock.Controller) producer.Producer {
+				mock := mocks.NewProducerMock(mc)
 				return mock
 			},
 		},
@@ -168,6 +187,10 @@ func TestCreate(t *testing.T) {
 				mock.SaveMock.Expect(ctx, user).Return(0, errSave)
 				return mock
 			},
+			authProducerMock: func(mc *minimock.Controller) producer.Producer {
+				mock := mocks.NewProducerMock(mc)
+				return mock
+			},
 		},
 		{
 			name: "error case: err with log",
@@ -197,6 +220,10 @@ func TestCreate(t *testing.T) {
 				mock := repoMocks.NewStorageInterfaceMock(mc)
 				mock.SaveMock.Expect(ctx, user).Return(id, nil)
 				mock.LogMock.Expect(ctx, models.SAVE).Return(errLog)
+				return mock
+			},
+			authProducerMock: func(mc *minimock.Controller) producer.Producer {
+				mock := mocks.NewProducerMock(mc)
 				return mock
 			},
 		},
@@ -231,6 +258,11 @@ func TestCreate(t *testing.T) {
 				mock.LogMock.Expect(ctx, models.SAVE).Return(nil)
 				return mock
 			},
+			authProducerMock: func(mc *minimock.Controller) producer.Producer {
+				mock := mocks.NewProducerMock(mc)
+				mock.SendMessageMock.Return(part, offset, nil)
+				return mock
+			},
 		},
 	}
 
@@ -242,7 +274,8 @@ func TestCreate(t *testing.T) {
 			RepoMock := tt.authStorageMock(mc)
 			CacheMock := tt.authCacheMock(mc)
 			TxManMock := tt.authTxManMock(mc)
-			service := authserv.NewService(RepoMock, TxManMock, CacheMock)
+			Producer := tt.authProducerMock(mc)
+			service := authserv.NewService(RepoMock, TxManMock, CacheMock, Producer)
 
 			_, err := service.Create(tt.args.ctx, tt.args.req)
 			if tt.err != nil {

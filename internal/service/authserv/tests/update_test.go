@@ -121,7 +121,7 @@ func TestUpdate(t *testing.T) {
 			RepoMock := tt.authStorageMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			CacheMock := tt.authCacheMock(mc)
-			service := authserv.NewService(RepoMock, TxManMock, CacheMock)
+			service := authserv.NewService(RepoMock, TxManMock, CacheMock, nil)
 
 			err := service.Update(ctx, tt.userUpdate)
 			if tt.err != nil {
