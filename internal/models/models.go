@@ -18,13 +18,13 @@ const (
 type (
 	// User моделька профиля пользователя для сервисного слоя.
 	User struct {
-		ID        int64     `db:"id" redis:"id"`
-		Name      string    `db:"name"`
-		Email     string    `db:"email"`
-		Password  string    `db:"password"`
-		Role      string    `db:"role"`
-		CreatedAt time.Time `db:"created_at"`
-		UpdatedAt time.Time `db:"updated_at"`
+		ID        int64     `db:"id" redis:"id" json:"id"`
+		Name      string    `db:"name" json:"name"`
+		Email     string    `db:"email" json:"email"`
+		Password  string    `db:"password" json:"password"`
+		Role      string    `db:"role" json:"role"`
+		CreatedAt time.Time `db:"created_at" json:"created_at"`
+		UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 	}
 	// UserID id пользователя.
 	UserID int64

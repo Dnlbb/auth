@@ -16,18 +16,23 @@ import (
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/Dnlbb/platform_common/pkg/db/pg"
 	"github.com/Dnlbb/platform_common/pkg/db/transaction"
+	"github.com/IBM/sarama"
 	redigo "github.com/gomodule/redigo/redis"
 )
 
 type serviceProvider struct {
-	pgConfig    config.PGConfig
-	grpcConfig  config.GRPCConfig
-	redisConfig config.RedisConfig
+	pgConfig      config.PGConfig
+	grpcConfig    config.GRPCConfig
+	redisConfig   config.RedisConfig
+	httpConfig    config.HTTPConfig
+	swaggerConfig config.SwaggerConf
+	kafkaConfig   config.KafkaConf
 
-	dbClient    db.Client
-	redisPool   *redigo.Pool
-	redisClient redis.Client
-	txManager   db.TxManager
+	kafkaProducer sarama.SyncProducer
+	dbClient      db.Client
+	redisPool     *redigo.Pool
+	redisClient   redis.Client
+	txManager     db.TxManager
 
 	serviceCache   repointerface.CacheInterface
 	authRepository repointerface.StorageInterface
@@ -83,6 +88,32 @@ func (s *serviceProvider) GetRedisConfig() config.RedisConfig {
 	return s.redisConfig
 }
 
+func (s *serviceProvider) GetHTTPConfig() config.HTTPConfig {
+	if s.httpConfig == nil {
+		cfg, err := config.NewHTTPConfig()
+		if err != nil {
+			log.Fatal("failed to load http config: %w", err)
+		}
+
+		s.httpConfig = cfg
+	}
+
+	return s.httpConfig
+}
+
+func (s *serviceProvider) GetSwaggerConfig() config.SwaggerConf {
+	if s.swaggerConfig == nil {
+		cfg, err := config.NewSwaggerServerConf()
+		if err != nil {
+			log.Fatal("failed to load swagger config: %w", err)
+		}
+
+		s.swaggerConfig = cfg
+	}
+
+	return s.swaggerConfig
+}
+
 // GetDBClient инициализируем клиента к базе данных.
 func (s *serviceProvider) GetDBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
@@ -101,6 +132,41 @@ func (s *serviceProvider) GetDBClient(ctx context.Context) db.Client {
 	}
 
 	return s.dbClient
+}
+
+func (s *serviceProvider) GetkafkaConfig() config.KafkaConf {
+	if s.kafkaConfig == nil {
+		cfg, err := config.NewKafkaConfImpl()
+		if err != nil {
+			log.Fatal("failed to load kafka config: %w", err)
+		}
+
+		s.kafkaConfig = cfg
+	}
+
+	return s.kafkaConfig
+}
+
+func (s *serviceProvider) GetKafkaProducer() sarama.SyncProducer {
+	if s.kafkaProducer == nil {
+		conf := sarama.NewConfig()
+		conf.Producer.RequiredAcks = sarama.WaitForAll
+		conf.Producer.Return.Successes = true
+		conf.Producer.Retry.Max = 5
+
+		s.GetkafkaConfig()
+
+		producer, err := sarama.NewSyncProducer(s.kafkaConfig.Addresses(), conf)
+		if err != nil {
+			log.Fatal("failed to create kafka producer: %w", err)
+		}
+
+		closer.Add(producer.Close)
+
+		s.kafkaProducer = producer
+	}
+
+	return s.kafkaProducer
 }
 
 func (s *serviceProvider) RedisPool() *redigo.Pool {
@@ -157,6 +223,7 @@ func (s *serviceProvider) GetAuthService(ctx context.Context) servinterfaces.Aut
 		s.authService = authserv.NewService(s.GetAuthRepository(ctx),
 			s.GetTxManager(ctx),
 			s.GetCache(ctx),
+			s.GetKafkaProducer(),
 		)
 	}
 

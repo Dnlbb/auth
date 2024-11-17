@@ -118,7 +118,7 @@ func TestDelete(t *testing.T) {
 			RepoMock := tt.authStorageMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			CacheMock := tt.authCacheMock(mc)
-			service := authserv.NewService(RepoMock, TxManMock, CacheMock)
+			service := authserv.NewService(RepoMock, TxManMock, CacheMock, nil)
 
 			err := service.Delete(ctx, tt.userID)
 			if tt.err != nil {

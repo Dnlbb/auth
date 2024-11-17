@@ -2,10 +2,12 @@ package authserv
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
 	"github.com/Dnlbb/auth/internal/models"
+	"github.com/IBM/sarama"
 )
 
 func (s service) Create(ctx context.Context, user models.User) (*int64, error) {
@@ -35,6 +37,21 @@ func (s service) Create(ctx context.Context, user models.User) (*int64, error) {
 
 	if err = s.cache.Create(ctx, id, user); err != nil {
 		log.Printf("failed to cache user: %v", err)
+	}
+
+	data, err := json.Marshal(user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal user: %w", err)
+	}
+
+	msg := &sarama.ProducerMessage{
+		Topic: "notify",
+		Value: sarama.StringEncoder(data),
+	}
+
+	_, _, err = s.kafkaProducer.SendMessage(msg)
+	if err != nil {
+		log.Printf("failed to send message: %v", err)
 	}
 
 	return &id, nil
