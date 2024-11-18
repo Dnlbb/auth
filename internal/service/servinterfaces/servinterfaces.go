@@ -6,8 +6,8 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 )
 
-// AuthService интерфейс сервиса.
-type AuthService interface {
+// UserService интерфейс сервиса.
+type UserService interface {
 	Create(ctx context.Context, user models.User) (*int64, error)
 	Delete(ctx context.Context, userID models.DeleteID) error
 	Update(ctx context.Context, userUpdate models.User) error

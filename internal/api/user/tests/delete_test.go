@@ -18,7 +18,7 @@ import (
 )
 
 func TestDelete(t *testing.T) {
-	type authServiceMockFunc func(mc *minimock.Controller) servinterfaces.AuthService
+	type authServiceMockFunc func(mc *minimock.Controller) servinterfaces.UserService
 
 	type args struct {
 		ctx context.Context
@@ -51,8 +51,8 @@ func TestDelete(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, models.DeleteID(idToDelete)).Return(nil)
 				return mock
 			},
@@ -67,8 +67,8 @@ func TestDelete(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  fmt.Errorf("deleting user error: %w", errorDelete),
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, models.DeleteID(idToDelete)).Return(errorDelete)
 				return mock
 			},

@@ -8,10 +8,10 @@ import (
 // Controller структура реализующая сгенерированный grpc сервер
 type Controller struct {
 	userv1.UnimplementedUserApiServer
-	authService servinterfaces.AuthService
+	authService servinterfaces.UserService
 }
 
 // NewController конструктор для реализации grpc сервера
-func NewController(authService servinterfaces.AuthService) *Controller {
+func NewController(authService servinterfaces.UserService) *Controller {
 	return &Controller{authService: authService}
 }

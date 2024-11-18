@@ -24,6 +24,7 @@ func (s service) GetRefreshToken(ctx context.Context, refreshToken string) (*str
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not get refresh token expiration")
 	}
+
 	accessToken, err := utils.GenerateToken(models.UserPayload{
 		Username: user.Name,
 		Role:     user.Role,

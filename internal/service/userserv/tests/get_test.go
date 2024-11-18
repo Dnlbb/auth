@@ -11,7 +11,7 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 	repoMocks "github.com/Dnlbb/auth/internal/repository/mocks"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
-	"github.com/Dnlbb/auth/internal/service/authserv"
+	"github.com/Dnlbb/auth/internal/service/userserv"
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
@@ -196,7 +196,7 @@ func TestGet(t *testing.T) {
 			CacheMock := tt.authCacheMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			StorageMock := tt.authStorageMock(mc)
-			service := authserv.NewService(StorageMock, TxManMock, CacheMock, nil)
+			service := userserv.NewService(StorageMock, TxManMock, CacheMock, nil)
 
 			result, err := service.Get(tt.args.ctx, tt.args.params)
 			if tt.err != nil {

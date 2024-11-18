@@ -13,7 +13,7 @@ import (
 	"github.com/Dnlbb/auth/internal/producer/mocks"
 	repoMocks "github.com/Dnlbb/auth/internal/repository/mocks"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
-	"github.com/Dnlbb/auth/internal/service/authserv"
+	"github.com/Dnlbb/auth/internal/service/userserv"
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
@@ -275,7 +275,7 @@ func TestCreate(t *testing.T) {
 			CacheMock := tt.authCacheMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			Producer := tt.authProducerMock(mc)
-			service := authserv.NewService(RepoMock, TxManMock, CacheMock, Producer)
+			service := userserv.NewService(RepoMock, TxManMock, CacheMock, Producer)
 
 			_, err := service.Create(tt.args.ctx, tt.args.req)
 			if tt.err != nil {

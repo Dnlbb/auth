@@ -1,4 +1,4 @@
-package authserv
+package userserv
 
 import (
 	"context"

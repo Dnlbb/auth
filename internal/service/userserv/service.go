@@ -1,4 +1,4 @@
-package authserv
+package userserv
 
 import (
 	"github.com/Dnlbb/auth/internal/producer"
@@ -18,7 +18,7 @@ type service struct {
 func NewService(storage repointerface.StorageInterface,
 	txManager db.TxManager,
 	cache repointerface.CacheInterface,
-	kafkaProducer producer.Producer) servinterfaces.AuthService {
+	kafkaProducer producer.Producer) servinterfaces.UserService {
 	return &service{storage: storage,
 		txManager:     txManager,
 		cache:         cache,

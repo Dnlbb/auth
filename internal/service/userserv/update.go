@@ -1,4 +1,4 @@
-package authserv
+package userserv
 
 import (
 	"context"
@@ -7,15 +7,15 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 )
 
-func (s service) Delete(ctx context.Context, userID models.DeleteID) error {
+func (s service) Update(ctx context.Context, userUpdate models.User) error {
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		var errTx error
-		errTx = s.storage.Delete(ctx, userID)
+		errTx = s.storage.Update(ctx, userUpdate)
 		if errTx != nil {
 			return errTx
 		}
 
-		errTx = s.storage.Log(ctx, models.DELETE)
+		errTx = s.storage.Log(ctx, models.UPDATE)
 		if errTx != nil {
 			return errTx
 		}
@@ -24,7 +24,7 @@ func (s service) Delete(ctx context.Context, userID models.DeleteID) error {
 	})
 
 	if err != nil {
-		return fmt.Errorf("error deleting user: %w", err)
+		return fmt.Errorf("could not update user: %w", err)
 	}
 
 	return nil

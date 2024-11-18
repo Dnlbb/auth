@@ -10,7 +10,7 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 	repoMocks "github.com/Dnlbb/auth/internal/repository/mocks"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
-	"github.com/Dnlbb/auth/internal/service/authserv"
+	"github.com/Dnlbb/auth/internal/service/userserv"
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
@@ -121,7 +121,7 @@ func TestUpdate(t *testing.T) {
 			RepoMock := tt.authStorageMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			CacheMock := tt.authCacheMock(mc)
-			service := authserv.NewService(RepoMock, TxManMock, CacheMock, nil)
+			service := userserv.NewService(RepoMock, TxManMock, CacheMock, nil)
 
 			err := service.Update(ctx, tt.userUpdate)
 			if tt.err != nil {

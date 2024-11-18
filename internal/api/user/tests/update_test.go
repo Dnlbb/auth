@@ -19,7 +19,7 @@ import (
 )
 
 func TestUpdate(t *testing.T) {
-	type authServiceMockFunc func(mc *minimock.Controller) servinterfaces.AuthService
+	type authServiceMockFunc func(mc *minimock.Controller) servinterfaces.UserService
 
 	type args struct {
 		ctx context.Context
@@ -56,8 +56,8 @@ func TestUpdate(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, models.User{
 					ID:    idToUpdate,
 					Name:  name,
@@ -80,8 +80,8 @@ func TestUpdate(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, models.User{
 					ID:    idToUpdate,
 					Name:  name,
@@ -104,8 +104,8 @@ func TestUpdate(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, models.User{
 					ID:    idToUpdate,
 					Name:  name,
@@ -128,8 +128,8 @@ func TestUpdate(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  fmt.Errorf("error updating user: %w", errorUpdate),
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, models.User{
 					ID:    idToUpdate,
 					Name:  name,

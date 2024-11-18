@@ -15,8 +15,8 @@ import (
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
 	"github.com/Dnlbb/auth/internal/service/accessserv"
 	"github.com/Dnlbb/auth/internal/service/authorizationserv"
-	"github.com/Dnlbb/auth/internal/service/authserv"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
+	"github.com/Dnlbb/auth/internal/service/userserv"
 	"github.com/Dnlbb/platform_common/pkg/closer"
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/Dnlbb/platform_common/pkg/db/pg"
@@ -44,7 +44,7 @@ type serviceProvider struct {
 	userRepository repointerface.StorageInterface
 	accessPolicy   repointerface.AccessPolicies
 
-	userService           servinterfaces.AuthService
+	userService           servinterfaces.UserService
 	authorizationService  servinterfaces.AuthorizationService
 	accessPoliciesService servinterfaces.AccessService
 
@@ -252,9 +252,9 @@ func (s *serviceProvider) GetCache(ctx context.Context) repointerface.CacheInter
 }
 
 // GetUserService инициализация сервиса авторизации.
-func (s *serviceProvider) GetUserService(ctx context.Context) servinterfaces.AuthService {
+func (s *serviceProvider) GetUserService(ctx context.Context) servinterfaces.UserService {
 	if s.userService == nil {
-		s.userService = authserv.NewService(s.GetUserRepository(ctx),
+		s.userService = userserv.NewService(s.GetUserRepository(ctx),
 			s.GetTxManager(ctx),
 			s.GetCache(ctx),
 			s.GetKafkaProducer(),

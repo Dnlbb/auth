@@ -19,7 +19,7 @@ import (
 
 func TestGet(t *testing.T) {
 	type (
-		authServiceMockFunc func(mc *minimock.Controller) servinterfaces.AuthService
+		authServiceMockFunc func(mc *minimock.Controller) servinterfaces.UserService
 		args                struct {
 			ctx context.Context
 			req *user_v1.GetRequest
@@ -66,8 +66,8 @@ func TestGet(t *testing.T) {
 				UpdatedAt: timestamppb.New(updatedAt),
 			},
 			err: nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, models.GetUserParams{ID: &id}).Return(&models.User{
 					ID:        id,
 					Name:      name,
@@ -98,8 +98,8 @@ func TestGet(t *testing.T) {
 				UpdatedAt: timestamppb.New(updatedAt),
 			},
 			err: nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, models.GetUserParams{Username: &username}).Return(&models.User{
 					ID:        id,
 					Name:      name,
@@ -121,8 +121,8 @@ func TestGet(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("error when getUser request: %w", errorGet),
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, models.GetUserParams{ID: &id}).Return(nil, errorGet)
 				return mock
 			},

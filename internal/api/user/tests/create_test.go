@@ -18,7 +18,7 @@ import (
 
 func TestCreate(t *testing.T) {
 	type (
-		authServiceMockFunc func(mc *minimock.Controller) servinterfaces.AuthService
+		authServiceMockFunc func(mc *minimock.Controller) servinterfaces.UserService
 		args                struct {
 			ctx context.Context
 			req *user_v1.CreateRequest
@@ -63,8 +63,8 @@ func TestCreate(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				// Не вынесено отдельно, чтобы проверить конвертацию разных ролей.
 				mock.CreateMock.Expect(ctx, models.User{
 					Name:     name,
@@ -91,8 +91,8 @@ func TestCreate(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				// Не вынесено отдельно, чтобы проверить конвертацию разных ролей.
 				mock.CreateMock.Expect(ctx, models.User{
 					Name:     name,
@@ -119,8 +119,8 @@ func TestCreate(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				// Не вынесено отдельно, чтобы проверить конвертацию разных ролей.
 				mock.CreateMock.Expect(ctx, models.User{
 					Name:     name,
@@ -147,8 +147,8 @@ func TestCreate(t *testing.T) {
 			},
 			want: nil,
 			err:  fmt.Errorf("error while creating: %w", errorCreate),
-			authServiceMock: func(mc *minimock.Controller) servinterfaces.AuthService {
-				mock := serviceMocks.NewAuthServiceMock(mc)
+			authServiceMock: func(mc *minimock.Controller) servinterfaces.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, models.User{
 					Name:     name,
 					Email:    email,

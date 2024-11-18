@@ -108,7 +108,7 @@ test:
 
 test-coverage:
 	go clean -testcache
-	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=github.com/Dnlbb/auth/internal/service/authserv/...,github.com/Dnlbb/auth/internal/api/auth/... -count 5
+	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=github.com/Dnlbb/auth/internal/service/userserv/...,github.com/Dnlbb/auth/internal/api/user/... -count 5
 	rm -rf coverage
 	mkdir -p coverage
 	grep -v 'mocks\|config' coverage.tmp.out > coverage/coverage.out

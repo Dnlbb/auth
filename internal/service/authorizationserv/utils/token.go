@@ -36,6 +36,7 @@ func VerifyToken(tokenStr string, secretKey []byte) (*models.UserClaims, error) 
 			return secretKey, nil
 		},
 	)
+
 	if err != nil {
 		return nil, errors.Errorf("invalid token: %s", err.Error())
 	}
