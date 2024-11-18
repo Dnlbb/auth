@@ -2,7 +2,7 @@
 
 package mocks
 
-//go:generate minimock -i github.com/Dnlbb/auth/internal/repository/repoInterface.StorageInterface -o storage_interface_minimock.go -n StorageInterfaceMock -p mocks
+//go:generate minimock -i github.com/Dnlbb/user/internal/repository/repoInterface.StorageInterface -o storage_interface_minimock.go -n StorageInterfaceMock -p mocks
 
 import (
 	"context"

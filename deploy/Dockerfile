@@ -8,14 +8,14 @@ WORKDIR /github.com/Dnlbb/auth/
 RUN go mod download
 
 # Собираем бинарник
-RUN go build -o ./bin/auth-server cmd/main.go
+RUN go build -o ./bin/user-server cmd/main.go
 
 # Финальный этап
 FROM alpine:latest
 
 WORKDIR /root/cmd
 
-# Копируем бинарник auth-server из builder стадии
+# Копируем бинарник user-server из builder стадии
 COPY --from=builder /github.com/Dnlbb/auth/bin/auth-server ./cmd/
 COPY --from=builder /github.com/Dnlbb/auth/auth.env ./postgres/.env
 

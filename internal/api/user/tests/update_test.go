@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Dnlbb/auth/internal/api/auth"
+	"github.com/Dnlbb/auth/internal/api/user"
 	"github.com/Dnlbb/auth/internal/models"
 	serviceMocks "github.com/Dnlbb/auth/internal/service/mocks"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
-	"github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/auth/pkg/user_v1"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
 	"github.com/pkg/errors"
@@ -23,7 +23,7 @@ func TestUpdate(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *auth_v1.UpdateRequest
+		req *user_v1.UpdateRequest
 	}
 
 	var (
@@ -47,11 +47,11 @@ func TestUpdate(t *testing.T) {
 			name: "success case: update role to USER",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.UpdateRequest{
+				req: &user_v1.UpdateRequest{
 					Id:    idToUpdate,
 					Name:  wrapperspb.String(name),
 					Email: wrapperspb.String(email),
-					Role:  auth_v1.Role_USER,
+					Role:  user_v1.Role_USER,
 				},
 			},
 			want: &emptypb.Empty{},
@@ -71,11 +71,11 @@ func TestUpdate(t *testing.T) {
 			name: "success case: convert role ROLE_UNSPECIFIED",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.UpdateRequest{
+				req: &user_v1.UpdateRequest{
 					Id:    idToUpdate,
 					Name:  wrapperspb.String(name),
 					Email: wrapperspb.String(email),
-					Role:  auth_v1.Role_ROLE_UNSPECIFIED,
+					Role:  user_v1.Role_ROLE_UNSPECIFIED,
 				},
 			},
 			want: &emptypb.Empty{},
@@ -95,11 +95,11 @@ func TestUpdate(t *testing.T) {
 			name: "success case: update role to ADMIN",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.UpdateRequest{
+				req: &user_v1.UpdateRequest{
 					Id:    idToUpdate,
 					Name:  wrapperspb.String(name),
 					Email: wrapperspb.String(email),
-					Role:  auth_v1.Role_ADMIN,
+					Role:  user_v1.Role_ADMIN,
 				},
 			},
 			want: &emptypb.Empty{},
@@ -119,11 +119,11 @@ func TestUpdate(t *testing.T) {
 			name: "error case: service layer error",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.UpdateRequest{
+				req: &user_v1.UpdateRequest{
 					Id:    idToUpdate,
 					Name:  wrapperspb.String(name),
 					Email: wrapperspb.String(email),
-					Role:  auth_v1.Role_USER,
+					Role:  user_v1.Role_USER,
 				},
 			},
 			want: &emptypb.Empty{},
@@ -147,7 +147,7 @@ func TestUpdate(t *testing.T) {
 			t.Parallel()
 
 			AuthServiceMock := tt.authServiceMock(mc)
-			api := auth.NewController(AuthServiceMock)
+			api := user.NewController(AuthServiceMock)
 
 			result, err := api.Update(tt.args.ctx, tt.args.req)
 			if tt.err != nil {

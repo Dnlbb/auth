@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Auth API",
+    "title": "User API",
     "version": "1.0.0",
     "contact": {
       "name": "Daniil"
@@ -9,7 +9,7 @@
   },
   "tags": [
     {
-      "name": "Auth"
+      "name": "UserApi"
     }
   ],
   "host": "localhost:8080",
@@ -23,14 +23,14 @@
     "application/json"
   ],
   "paths": {
-    "/auth/create": {
+    "/user/create": {
       "post": {
-        "operationId": "Auth_Create",
+        "operationId": "UserApi_Create",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/auth_v1CreateResponse"
+              "$ref": "#/definitions/user_v1CreateResponse"
             }
           },
           "default": {
@@ -46,18 +46,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/auth_v1CreateRequest"
+              "$ref": "#/definitions/user_v1CreateRequest"
             }
           }
         ],
         "tags": [
-          "Auth"
+          "UserApi"
         ]
       }
     },
-    "/auth/delete": {
+    "/user/delete": {
       "delete": {
-        "operationId": "Auth_Delete",
+        "operationId": "UserApi_Delete",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -83,18 +83,18 @@
           }
         ],
         "tags": [
-          "Auth"
+          "UserApi"
         ]
       }
     },
-    "/auth/get": {
+    "/user/get": {
       "get": {
-        "operationId": "Auth_Get",
+        "operationId": "UserApi_Get",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/auth_v1GetResponse"
+              "$ref": "#/definitions/user_v1GetResponse"
             }
           },
           "default": {
@@ -120,13 +120,13 @@
           }
         ],
         "tags": [
-          "Auth"
+          "UserApi"
         ]
       }
     },
-    "/auth/update": {
+    "/user/update": {
       "put": {
-        "operationId": "Auth_Update",
+        "operationId": "UserApi_Update",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -148,101 +148,17 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/auth_v1UpdateRequest"
+              "$ref": "#/definitions/user_v1UpdateRequest"
             }
           }
         ],
         "tags": [
-          "Auth"
+          "UserApi"
         ]
       }
     }
   },
   "definitions": {
-    "auth_v1CreateRequest": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/auth_v1User"
-        },
-        "password": {
-          "type": "string"
-        },
-        "passwordConfirm": {
-          "type": "string"
-        }
-      }
-    },
-    "auth_v1CreateResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "auth_v1GetResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "user": {
-          "$ref": "#/definitions/auth_v1User"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "auth_v1Role": {
-      "type": "string",
-      "enum": [
-        "ROLE_UNSPECIFIED",
-        "USER",
-        "ADMIN"
-      ],
-      "default": "ROLE_UNSPECIFIED"
-    },
-    "auth_v1UpdateRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "role": {
-          "$ref": "#/definitions/auth_v1Role"
-        }
-      }
-    },
-    "auth_v1User": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "role": {
-          "$ref": "#/definitions/auth_v1Role"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -268,6 +184,90 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "user_v1CreateRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/user_v1User"
+        },
+        "password": {
+          "type": "string"
+        },
+        "passwordConfirm": {
+          "type": "string"
+        }
+      }
+    },
+    "user_v1CreateResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "user_v1GetResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/user_v1User"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "user_v1Role": {
+      "type": "string",
+      "enum": [
+        "ROLE_UNSPECIFIED",
+        "USER",
+        "ADMIN"
+      ],
+      "default": "ROLE_UNSPECIFIED"
+    },
+    "user_v1UpdateRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/user_v1Role"
+        }
+      }
+    },
+    "user_v1User": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/user_v1Role"
         }
       }
     }

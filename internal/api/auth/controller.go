@@ -2,16 +2,18 @@ package auth
 
 import (
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
-	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/auth/pkg/auth_v1"
 )
 
-// Controller структура реализующая сгенерированный grpc сервер
+// Controller контроллер для api авторизации.
 type Controller struct {
-	authv1.UnimplementedAuthServer
-	authService servinterfaces.AuthService
+	auth_v1.UnimplementedAuthServer
+	authorizationService servinterfaces.AuthorizationService
 }
 
-// NewController конструктор для реализации grpc сервера
-func NewController(authService servinterfaces.AuthService) *Controller {
-	return &Controller{authService: authService}
+// NewControllerAuthorization конструктор для контроллера api авторизации.
+func NewControllerAuthorization(authorizationService servinterfaces.AuthorizationService) *Controller {
+	return &Controller{
+		authorizationService: authorizationService,
+	}
 }

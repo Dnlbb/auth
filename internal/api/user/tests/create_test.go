@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Dnlbb/auth/internal/api/auth"
+	"github.com/Dnlbb/auth/internal/api/user"
 	"github.com/Dnlbb/auth/internal/models"
 	serviceMocks "github.com/Dnlbb/auth/internal/service/mocks"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
-	"github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/auth/pkg/user_v1"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
 	"github.com/pkg/errors"
@@ -21,7 +21,7 @@ func TestCreate(t *testing.T) {
 		authServiceMockFunc func(mc *minimock.Controller) servinterfaces.AuthService
 		args                struct {
 			ctx context.Context
-			req *auth_v1.CreateRequest
+			req *user_v1.CreateRequest
 		}
 	)
 
@@ -34,7 +34,7 @@ func TestCreate(t *testing.T) {
 		password = gofakeit.Password(true, true, true, true, true, 1)
 
 		errorCreate = errors.New("error with service")
-		res         = &auth_v1.CreateResponse{
+		res         = &user_v1.CreateResponse{
 			Id: id,
 		}
 	)
@@ -43,7 +43,7 @@ func TestCreate(t *testing.T) {
 	tests := []struct {
 		name            string
 		args            args
-		want            *auth_v1.CreateResponse
+		want            *user_v1.CreateResponse
 		err             error
 		authServiceMock authServiceMockFunc
 	}{
@@ -51,11 +51,11 @@ func TestCreate(t *testing.T) {
 			name: "success case",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.CreateRequest{
-					User: &auth_v1.User{
+				req: &user_v1.CreateRequest{
+					User: &user_v1.User{
 						Name:  name,
 						Email: email,
-						Role:  auth_v1.Role_USER,
+						Role:  user_v1.Role_USER,
 					},
 					Password:        password,
 					PasswordConfirm: password,
@@ -79,11 +79,11 @@ func TestCreate(t *testing.T) {
 			name: "success case: check convert role admin",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.CreateRequest{
-					User: &auth_v1.User{
+				req: &user_v1.CreateRequest{
+					User: &user_v1.User{
 						Name:  name,
 						Email: email,
-						Role:  auth_v1.Role_ADMIN,
+						Role:  user_v1.Role_ADMIN,
 					},
 					Password:        password,
 					PasswordConfirm: password,
@@ -107,11 +107,11 @@ func TestCreate(t *testing.T) {
 			name: "success case: check convert role unspecified",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.CreateRequest{
-					User: &auth_v1.User{
+				req: &user_v1.CreateRequest{
+					User: &user_v1.User{
 						Name:  name,
 						Email: email,
-						Role:  auth_v1.Role_ROLE_UNSPECIFIED,
+						Role:  user_v1.Role_ROLE_UNSPECIFIED,
 					},
 					Password:        password,
 					PasswordConfirm: password,
@@ -135,11 +135,11 @@ func TestCreate(t *testing.T) {
 			name: "error case: error in the service layer",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.CreateRequest{
-					User: &auth_v1.User{
+				req: &user_v1.CreateRequest{
+					User: &user_v1.User{
 						Name:  name,
 						Email: email,
-						Role:  auth_v1.Role_USER,
+						Role:  user_v1.Role_USER,
 					},
 					Password:        password,
 					PasswordConfirm: password,
@@ -166,7 +166,7 @@ func TestCreate(t *testing.T) {
 			t.Parallel()
 
 			AuthServiceMock := tt.authServiceMock(mc)
-			api := auth.NewController(AuthServiceMock)
+			api := user.NewController(AuthServiceMock)
 
 			newID, err := api.Create(tt.args.ctx, tt.args.req)
 			if tt.err != nil {

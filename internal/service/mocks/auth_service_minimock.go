@@ -2,7 +2,7 @@
 
 package mocks
 
-//go:generate minimock -i github.com/Dnlbb/auth/internal/service/servinterfaces.AuthService -o auth_service_minimock.go -n AuthServiceMock -p mocks
+//go:generate minimock -i github.com/Dnlbb/user/internal/service/servinterfaces.AuthService -o auth_service_minimock.go -n AuthServiceMock -p mocks
 
 import (
 	"context"

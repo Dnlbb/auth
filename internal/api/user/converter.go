@@ -1,10 +1,10 @@
-package auth
+package user
 
 import (
 	"time"
 
 	"github.com/Dnlbb/auth/internal/models"
-	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
+	userv1 "github.com/Dnlbb/auth/pkg/user_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -14,32 +14,32 @@ const (
 	strAdmin           = "ADMIN"
 )
 
-func mappingUserParams(userParams *authv1.GetRequest) models.GetUserParams {
+func mappingUserParams(userParams *userv1.GetRequest) models.GetUserParams {
 	var params models.GetUserParams
 	switch nameOrID := userParams.NameOrId.(type) {
-	case *authv1.GetRequest_Id:
+	case *userv1.GetRequest_Id:
 		params.ID = &nameOrID.Id
-	case *authv1.GetRequest_Username:
+	case *userv1.GetRequest_Username:
 		params.Username = &nameOrID.Username
 	}
 
 	return params
 }
 
-func toModelRole(role authv1.Role) string {
+func toModelRole(role userv1.Role) string {
 	switch role {
-	case authv1.Role_ROLE_UNSPECIFIED:
+	case userv1.Role_ROLE_UNSPECIFIED:
 		return strRoleUnspecified
-	case authv1.Role_ADMIN:
+	case userv1.Role_ADMIN:
 		return strAdmin
-	case authv1.Role_USER:
+	case userv1.Role_USER:
 		return strUser
 	}
 
 	return "ROLE_UNSPECIFIED"
 }
 
-func toModelUser(user *authv1.CreateRequest) models.User {
+func toModelUser(user *userv1.CreateRequest) models.User {
 	role := toModelRole(user.GetUser().GetRole())
 
 	return models.User{
@@ -49,12 +49,12 @@ func toModelUser(user *authv1.CreateRequest) models.User {
 		Password: user.Password}
 }
 
-func toProtoUserProfile(user models.User) *authv1.GetResponse {
+func toProtoUserProfile(user models.User) *userv1.GetResponse {
 	userRole := role2String(user.Role)
 
-	return &authv1.GetResponse{
+	return &userv1.GetResponse{
 		Id: user.ID,
-		User: &authv1.User{
+		User: &userv1.User{
 			Name:  user.Name,
 			Email: user.Email,
 			Role:  userRole,
@@ -64,7 +64,7 @@ func toProtoUserProfile(user models.User) *authv1.GetResponse {
 	}
 }
 
-func toUpdateUser(update *authv1.UpdateRequest) *models.User {
+func toUpdateUser(update *userv1.UpdateRequest) *models.User {
 	return &models.User{ID: update.GetId(),
 		Name:  update.Name.Value,
 		Email: update.Email.Value,
@@ -72,16 +72,16 @@ func toUpdateUser(update *authv1.UpdateRequest) *models.User {
 }
 
 // Role2String Определяем функцию конвертации из строки в Role
-func role2String(roleStr string) authv1.Role {
+func role2String(roleStr string) userv1.Role {
 	switch roleStr {
 	case strRoleUnspecified:
-		return authv1.Role_ROLE_UNSPECIFIED
+		return userv1.Role_ROLE_UNSPECIFIED
 	case strUser:
-		return authv1.Role_USER
+		return userv1.Role_USER
 	case strAdmin:
-		return authv1.Role_ADMIN
+		return userv1.Role_ADMIN
 	}
-	return authv1.Role_ROLE_UNSPECIFIED
+	return userv1.Role_ROLE_UNSPECIFIED
 }
 
 // ToTimestampProto конвертация времени

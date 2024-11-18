@@ -7,10 +7,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// LoadEnv загружаем переменные окружения из файла auth.env в окружение проекта.
+// LoadEnv загружаем переменные окружения из файла user.env в окружение проекта.
 func LoadEnv(path2env string) error {
 	if err := godotenv.Load(path2env); err != nil {
-		return fmt.Errorf("error loading auth.env file: %w, path to env: %s", err, path2env)
+		return fmt.Errorf("error loading user.env file: %w, path to env: %s", err, path2env)
 	}
 
 	return nil

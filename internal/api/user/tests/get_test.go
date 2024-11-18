@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Dnlbb/auth/internal/api/auth"
+	"github.com/Dnlbb/auth/internal/api/user"
 	"github.com/Dnlbb/auth/internal/models"
 	serviceMocks "github.com/Dnlbb/auth/internal/service/mocks"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
-	"github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/auth/pkg/user_v1"
 	"github.com/gojuno/minimock/v3"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 		authServiceMockFunc func(mc *minimock.Controller) servinterfaces.AuthService
 		args                struct {
 			ctx context.Context
-			req *auth_v1.GetRequest
+			req *user_v1.GetRequest
 		}
 	)
 
@@ -43,7 +43,7 @@ func TestGet(t *testing.T) {
 	tests := []struct {
 		name            string
 		args            args
-		want            *auth_v1.GetResponse
+		want            *user_v1.GetResponse
 		err             error
 		authServiceMock authServiceMockFunc
 	}{
@@ -51,16 +51,16 @@ func TestGet(t *testing.T) {
 			name: "success case: get by id",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.GetRequest{
-					NameOrId: &auth_v1.GetRequest_Id{Id: id},
+				req: &user_v1.GetRequest{
+					NameOrId: &user_v1.GetRequest_Id{Id: id},
 				},
 			},
-			want: &auth_v1.GetResponse{
+			want: &user_v1.GetResponse{
 				Id: id,
-				User: &auth_v1.User{
+				User: &user_v1.User{
 					Name:  name,
 					Email: email,
-					Role:  auth_v1.Role_USER,
+					Role:  user_v1.Role_USER,
 				},
 				CreatedAt: timestamppb.New(createdAt),
 				UpdatedAt: timestamppb.New(updatedAt),
@@ -83,16 +83,16 @@ func TestGet(t *testing.T) {
 			name: "success case: get by username",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.GetRequest{
-					NameOrId: &auth_v1.GetRequest_Username{Username: username},
+				req: &user_v1.GetRequest{
+					NameOrId: &user_v1.GetRequest_Username{Username: username},
 				},
 			},
-			want: &auth_v1.GetResponse{
+			want: &user_v1.GetResponse{
 				Id: id,
-				User: &auth_v1.User{
+				User: &user_v1.User{
 					Name:  name,
 					Email: email,
-					Role:  auth_v1.Role_USER,
+					Role:  user_v1.Role_USER,
 				},
 				CreatedAt: timestamppb.New(createdAt),
 				UpdatedAt: timestamppb.New(updatedAt),
@@ -115,8 +115,8 @@ func TestGet(t *testing.T) {
 			name: "error case: service get error",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.GetRequest{
-					NameOrId: &auth_v1.GetRequest_Id{Id: id},
+				req: &user_v1.GetRequest{
+					NameOrId: &user_v1.GetRequest_Id{Id: id},
 				},
 			},
 			want: nil,
@@ -135,7 +135,7 @@ func TestGet(t *testing.T) {
 			t.Parallel()
 
 			authServiceMock := tt.authServiceMock(mc)
-			api := auth.NewController(authServiceMock)
+			api := user.NewController(authServiceMock)
 
 			resp, err := api.Get(tt.args.ctx, tt.args.req)
 			if tt.err != nil {

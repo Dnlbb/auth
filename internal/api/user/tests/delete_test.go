@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Dnlbb/auth/internal/api/auth"
+	"github.com/Dnlbb/auth/internal/api/user"
 	"github.com/Dnlbb/auth/internal/models"
 	serviceMocks "github.com/Dnlbb/auth/internal/service/mocks"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
-	"github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/auth/pkg/user_v1"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
 	"github.com/pkg/errors"
@@ -22,7 +22,7 @@ func TestDelete(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *auth_v1.DeleteRequest
+		req *user_v1.DeleteRequest
 	}
 
 	var (
@@ -45,7 +45,7 @@ func TestDelete(t *testing.T) {
 			name: "success case",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.DeleteRequest{
+				req: &user_v1.DeleteRequest{
 					Id: idToDelete,
 				},
 			},
@@ -61,7 +61,7 @@ func TestDelete(t *testing.T) {
 			name: "error case: error in the service layer",
 			args: args{
 				ctx: ctx,
-				req: &auth_v1.DeleteRequest{
+				req: &user_v1.DeleteRequest{
 					Id: idToDelete,
 				},
 			},
@@ -81,7 +81,7 @@ func TestDelete(t *testing.T) {
 			t.Parallel()
 
 			authServiceMock := tt.authServiceMock(mc)
-			api := auth.NewController(authServiceMock)
+			api := user.NewController(authServiceMock)
 
 			resp, err := api.Delete(tt.args.ctx, tt.args.req)
 			if tt.err != nil {

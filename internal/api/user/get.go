@@ -1,14 +1,14 @@
-package auth
+package user
 
 import (
 	"context"
 	"fmt"
 
-	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
+	userv1 "github.com/Dnlbb/auth/pkg/user_v1"
 )
 
 // Get конвертация grpc структуры в сервисную модель и дальнейшая передача запроса в сервисный слой Get.
-func (c *Controller) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
+func (c *Controller) Get(ctx context.Context, req *userv1.GetRequest) (*userv1.GetResponse, error) {
 
 	userProfile, err := c.authService.Get(ctx, mappingUserParams(req))
 	if err != nil {

@@ -20,3 +20,8 @@ type CacheInterface interface {
 	Create(ctx context.Context, id int64, user models.User) error
 	Get(ctx context.Context, params models.GetUserParams) (*models.User, error)
 }
+
+// AccessPolicies политики доступа для юзеров (доступ определенных ролей х эндпоинтам).
+type AccessPolicies interface {
+	Check(path string, role string) error
+}

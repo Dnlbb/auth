@@ -22,6 +22,7 @@ func (s *storage) GetUser(ctx context.Context, params models.GetUserParams) (*mo
 		"name",
 		"email",
 		"role",
+		"password",
 		"created_at",
 		"updated_at",
 	).From("users")

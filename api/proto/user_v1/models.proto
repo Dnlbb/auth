@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package api.auth_v1;
+package api.user_v1;
 
 import "validate/validate.proto";
 
-option go_package = "github.com/Dnlbb/auth/pkg/auth_v1;auth_v1";
+option go_package = "github.com/Dnlbb/user/pkg/user_v1;user_v1";
 
 
 enum Role {
@@ -16,5 +16,5 @@ enum Role {
 message User {
   string name = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
   string email = 2 [(validate.rules).string.email = true];
-  Role role = 3 [(validate.rules).enum.defined_only = true];;
+  Role role = 3 [(validate.rules).enum.defined_only = true];
 }

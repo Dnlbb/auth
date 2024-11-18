@@ -2,7 +2,7 @@
 
 package mocks
 
-//go:generate minimock -i github.com/Dnlbb/auth/internal/repository/repoInterface.CacheInterface -o cache_interface_minimock.go -n CacheInterfaceMock -p mocks
+//go:generate minimock -i github.com/Dnlbb/user/internal/repository/repoInterface.CacheInterface -o cache_interface_minimock.go -n CacheInterfaceMock -p mocks
 
 import (
 	"context"
