@@ -5,12 +5,16 @@ import (
 	"log"
 
 	"github.com/Dnlbb/auth/internal/api/auth"
+	"github.com/Dnlbb/auth/internal/api/user"
 	"github.com/Dnlbb/auth/internal/client/cache/redis"
 	"github.com/Dnlbb/auth/internal/config"
+	"github.com/Dnlbb/auth/internal/repository/AccessPolicies"
 	"github.com/Dnlbb/auth/internal/repository/postgres/storage"
 	redisCache "github.com/Dnlbb/auth/internal/repository/redis"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
-	"github.com/Dnlbb/auth/internal/service/authserv"
+	userService "github.com/Dnlbb/auth/internal/service/user"
+
+	"github.com/Dnlbb/auth/internal/service/authorization"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
 	"github.com/Dnlbb/platform_common/pkg/closer"
 	"github.com/Dnlbb/platform_common/pkg/db"
@@ -27,6 +31,7 @@ type serviceProvider struct {
 	httpConfig    config.HTTPConfig
 	swaggerConfig config.SwaggerConf
 	kafkaConfig   config.KafkaConf
+	jwtConfig     config.JwtConfig
 
 	kafkaProducer sarama.SyncProducer
 	dbClient      db.Client
@@ -35,11 +40,14 @@ type serviceProvider struct {
 	txManager     db.TxManager
 
 	serviceCache   repointerface.CacheInterface
-	authRepository repointerface.StorageInterface
+	userRepository repointerface.StorageInterface
+	accessPolicy   repointerface.AccessPolicies
 
-	authService servinterfaces.AuthService
+	userService          servinterfaces.UserService
+	authorizationService servinterfaces.AuthorizationService
 
-	authController *auth.Controller
+	userController          *user.Controller
+	authorizationController *auth.Controller
 }
 
 func newServiceProvider() *serviceProvider {
@@ -72,6 +80,20 @@ func (s *serviceProvider) GetGRPCConfig() config.GRPCConfig {
 	}
 
 	return s.grpcConfig
+}
+
+// GetJwtConfig получаем конфиг для jwt.
+func (s *serviceProvider) GetJwtConfig() config.JwtConfig {
+	if s.jwtConfig == nil {
+		cfg, err := config.NewJWTConfig()
+		if err != nil {
+			log.Fatal("failed to load JWT config: %w", err)
+		}
+
+		s.jwtConfig = cfg
+	}
+
+	return s.jwtConfig
 }
 
 // GetRedisConfig получаем конфиг для redis.
@@ -200,13 +222,22 @@ func (s *serviceProvider) GetTxManager(ctx context.Context) db.TxManager {
 	return s.txManager
 }
 
-// GetAuthRepository инициализация хранилища.
-func (s *serviceProvider) GetAuthRepository(ctx context.Context) repointerface.StorageInterface {
-	if s.authRepository == nil {
-		s.authRepository = storage.NewPostgresRepo(s.GetDBClient(ctx))
+// GetUserRepository инициализация хранилища.
+func (s *serviceProvider) GetUserRepository(ctx context.Context) repointerface.StorageInterface {
+	if s.userRepository == nil {
+		s.userRepository = storage.NewPostgresRepo(s.GetDBClient(ctx))
 	}
 
-	return s.authRepository
+	return s.userRepository
+}
+
+// GetAccessPolicyRepository инициализация политик доступа.
+func (s *serviceProvider) GetAccessPolicyRepository(_ context.Context) repointerface.AccessPolicies {
+	if s.accessPolicy == nil {
+		s.accessPolicy = AccessPolicies.NewAccessPolicyRepository()
+	}
+
+	return s.accessPolicy
 }
 
 func (s *serviceProvider) GetCache(ctx context.Context) repointerface.CacheInterface {
@@ -217,24 +248,44 @@ func (s *serviceProvider) GetCache(ctx context.Context) repointerface.CacheInter
 	return s.serviceCache
 }
 
-// GetAuthService инициализация сервиса авторизации.
-func (s *serviceProvider) GetAuthService(ctx context.Context) servinterfaces.AuthService {
-	if s.authService == nil {
-		s.authService = authserv.NewService(s.GetAuthRepository(ctx),
+// GetUserService инициализация сервиса авторизации.
+func (s *serviceProvider) GetUserService(ctx context.Context) servinterfaces.UserService {
+	if s.userService == nil {
+		s.userService = userService.NewService(s.GetUserRepository(ctx),
 			s.GetTxManager(ctx),
 			s.GetCache(ctx),
 			s.GetKafkaProducer(),
 		)
 	}
 
-	return s.authService
+	return s.userService
 }
 
-// GetAuthController инициализация контроллера.
-func (s *serviceProvider) GetAuthController(ctx context.Context) *auth.Controller {
-	if s.authController == nil {
-		s.authController = auth.NewController(s.GetAuthService(ctx))
+func (s *serviceProvider) GetAuthorizationService(ctx context.Context) servinterfaces.AuthorizationService {
+	if s.authorizationService == nil {
+		s.authorizationService = authorization.NewService(
+			s.GetUserRepository(ctx),
+			s.GetCache(ctx),
+			s.GetAccessPolicyRepository(ctx),
+			s.GetJwtConfig())
 	}
 
-	return s.authController
+	return s.authorizationService
+}
+
+// GetUserController инициализация контроллера.
+func (s *serviceProvider) GetUserController(ctx context.Context) *user.Controller {
+	if s.userController == nil {
+		s.userController = user.NewController(s.GetUserService(ctx))
+	}
+
+	return s.userController
+}
+
+func (s *serviceProvider) GetAuthorizationController(ctx context.Context) *auth.Controller {
+	if s.authorizationController == nil {
+		s.authorizationController = auth.NewControllerAuthorization(s.GetAuthorizationService(ctx))
+	}
+
+	return s.authorizationController
 }

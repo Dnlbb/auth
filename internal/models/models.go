@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // LogKey тип для логирования запросов в базу.
@@ -37,5 +39,18 @@ type (
 	GetUserParams struct {
 		ID       *int64
 		Username *string
+	}
+
+	// UserPayload полезная нагрузка в jwt токен.
+	UserPayload struct {
+		Username string `json:"username"`
+		Role     string `json:"role"`
+	}
+
+	// UserClaims claims в jwt токене.
+	UserClaims struct {
+		jwt.StandardClaims
+		Username string `json:"username"`
+		Role     string `json:"role"`
 	}
 )

@@ -34,6 +34,7 @@ func (c cache) Get(ctx context.Context, params models.GetUserParams) (*models.Us
 		return nil, fmt.Errorf("error scanning user profile: %w", err)
 	}
 
+	fmt.Printf("%v", userProfile)
 	user, err := toServiceModels(userProfile)
 	if err != nil {
 		return nil, fmt.Errorf("error converting user profile: %w", err)

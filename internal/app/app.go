@@ -12,7 +12,8 @@ import (
 
 	"github.com/Dnlbb/auth/internal/config"
 	"github.com/Dnlbb/auth/internal/interceptor"
-	authv1 "github.com/Dnlbb/auth/pkg/auth_v1"
+	"github.com/Dnlbb/auth/pkg/auth_v1"
+	userv1 "github.com/Dnlbb/auth/pkg/user_v1"
 	_ "github.com/Dnlbb/auth/statik" // Нужно для инициализации файловой системы.
 	"github.com/Dnlbb/platform_common/pkg/closer"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -78,7 +79,8 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	authv1.RegisterAuthServer(a.grpcServer, a.serviceProvider.GetAuthController(ctx))
+	userv1.RegisterUserApiServer(a.grpcServer, a.serviceProvider.GetUserController(ctx))
+	auth_v1.RegisterAuthServer(a.grpcServer, a.serviceProvider.GetAuthorizationController(ctx))
 
 	return nil
 }
@@ -88,7 +90,7 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	err := authv1.RegisterAuthHandlerFromEndpoint(ctx, mux, a.serviceProvider.GetGRPCConfig().Address(), opts)
+	err := userv1.RegisterUserApiHandlerFromEndpoint(ctx, mux, a.serviceProvider.GetGRPCConfig().Address(), opts)
 	if err != nil {
 		return err
 	}

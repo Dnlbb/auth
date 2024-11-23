@@ -34,24 +34,37 @@ get-deps:
 
 generate:
 	mkdir -p pkg/swagger
-	make generate-api
+	make generate-user
+	make generate-auth
+	make generate-access
 	$(LOCAL_BIN)/statik -src=pkg/swagger/ -include='*.css,*.html,*.js,*.json,*.png'
 
 
-generate-api:
+generate-user:
+	mkdir -p pkg/user_v1
+	protoc --proto_path=./api/proto/user_v1 --proto_path vendor.protogen \
+	--go_out=pkg/user_v1 --go_opt=paths=source_relative \
+	--plugin=protoc-gen-go=bin/protoc-gen-go \
+	--go-grpc_out=pkg/user_v1 --go-grpc_opt=paths=source_relative \
+	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+	--grpc-gateway_out=pkg/user_v1 --grpc-gateway_opt=paths=source_relative \
+	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+	--validate_out lang=go:pkg/user_v1 --validate_opt=paths=source_relative \
+	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
+	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
+    --plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
+	./api/proto/user_v1/user.proto ./api/proto/user_v1/models.proto
+
+generate-auth:
 	mkdir -p pkg/auth_v1
 	protoc --proto_path=./api/proto/auth_v1 --proto_path vendor.protogen \
 	--go_out=pkg/auth_v1 --go_opt=paths=source_relative \
 	--plugin=protoc-gen-go=bin/protoc-gen-go \
-	--go-grpc_out=pkg/auth_v1 --go-grpc_opt=paths=source_relative \
-	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
-	--grpc-gateway_out=pkg/auth_v1 --grpc-gateway_opt=paths=source_relative \
-	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+    --go-grpc_out=pkg/auth_v1 --go-grpc_opt=paths=source_relative \
 	--validate_out lang=go:pkg/auth_v1 --validate_opt=paths=source_relative \
-	--plugin=protoc-gen-validate=bin/protoc-gen-validate \
-	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
-    --plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
-	./api/proto/auth_v1/auth.proto ./api/proto/auth_v1/user.proto
+    --plugin=protoc-gen-validate=bin/protoc-gen-validate \
+	./api/proto/auth_v1/auth.proto
+
 
 
 build:
@@ -82,7 +95,6 @@ docker-down:
 	docker compose -f ./deploy/docker-compose.yaml down
 
 
-
 test:
 	go clean -testcache
 	go test ./... -covermode count -coverpkg=github.com/Dnlbb/auth/internal/service/authserv/...,github.com/Dnlbb/auth/internal/api/auth/... -count 5
@@ -90,7 +102,7 @@ test:
 
 test-coverage:
 	go clean -testcache
-	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=github.com/Dnlbb/auth/internal/service/authserv/...,github.com/Dnlbb/auth/internal/api/auth/... -count 5
+	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=github.com/Dnlbb/auth/internal/service/userserv/...,github.com/Dnlbb/auth/internal/api/user/... -count 5
 	rm -rf coverage
 	mkdir -p coverage
 	grep -v 'mocks\|config' coverage.tmp.out > coverage/coverage.out
