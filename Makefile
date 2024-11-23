@@ -65,13 +65,7 @@ generate-auth:
     --plugin=protoc-gen-validate=bin/protoc-gen-validate \
 	./api/proto/auth_v1/auth.proto
 
-generate-access:
-	mkdir -p pkg/access_v1
-	protoc --proto_path=./api/proto/access_v1  \
-	--go_out=pkg/access_v1 --go_opt=paths=source_relative \
-	--plugin=protoc-gen-go=bin/protoc-gen-go \
-    --go-grpc_out=pkg/access_v1 --go-grpc_opt=paths=source_relative \
-	./api/proto/access_v1/access.proto
+
 
 build:
 	GOOS=linux GOARCH=amd64 go build -o auth_linux cmd/main.go

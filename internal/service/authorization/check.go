@@ -1,4 +1,4 @@
-package accessserv
+package authorization
 
 import (
 	"context"
@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Dnlbb/auth/internal/service/authorizationserv/utils"
+	"github.com/Dnlbb/auth/internal/service/authorization/utils"
 	"google.golang.org/grpc/metadata"
 )
 
 // Check проверка доступа.
-func (s Service) Check(ctx context.Context, address string) error {
+func (s service) Check(ctx context.Context, address string) error {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return errors.New("metadata is not provided")

@@ -12,7 +12,6 @@ import (
 
 	"github.com/Dnlbb/auth/internal/config"
 	"github.com/Dnlbb/auth/internal/interceptor"
-	"github.com/Dnlbb/auth/pkg/access_v1"
 	"github.com/Dnlbb/auth/pkg/auth_v1"
 	userv1 "github.com/Dnlbb/auth/pkg/user_v1"
 	_ "github.com/Dnlbb/auth/statik" // Нужно для инициализации файловой системы.
@@ -82,7 +81,6 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	userv1.RegisterUserApiServer(a.grpcServer, a.serviceProvider.GetUserController(ctx))
 	auth_v1.RegisterAuthServer(a.grpcServer, a.serviceProvider.GetAuthorizationController(ctx))
-	access_v1.RegisterAccessServer(a.grpcServer, a.serviceProvider.GetAccessController(ctx))
 
 	return nil
 }

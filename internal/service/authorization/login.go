@@ -1,11 +1,11 @@
-package authorizationserv
+package authorization
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/Dnlbb/auth/internal/models"
-	"github.com/Dnlbb/auth/internal/service/authorizationserv/utils"
+	"github.com/Dnlbb/auth/internal/service/authorization/utils"
 )
 
 func (s service) Login(ctx context.Context, user models.User) (*string, error) {

@@ -10,6 +10,7 @@ func (a AccessPolicyRepository) Check(path string, role string) error {
 	if !ok {
 		return errors.New("access role not found")
 	}
+
 	for _, p := range paths {
 		if p == path {
 			return nil

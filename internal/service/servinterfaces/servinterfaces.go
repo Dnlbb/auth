@@ -19,9 +19,5 @@ type AuthorizationService interface {
 	Login(ctx context.Context, user models.User) (*string, error)
 	GetAccessToken(ctx context.Context, refreshToken string) (*string, error)
 	GetRefreshToken(ctx context.Context, refreshToken string) (*string, error)
-}
-
-// AccessService интерфейс для проверки доступа пользователя.
-type AccessService interface {
 	Check(ctx context.Context, address string) error
 }

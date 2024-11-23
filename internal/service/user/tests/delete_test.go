@@ -10,7 +10,7 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 	repoMocks "github.com/Dnlbb/auth/internal/repository/mocks"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
-	"github.com/Dnlbb/auth/internal/service/userserv"
+	"github.com/Dnlbb/auth/internal/service/user"
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
@@ -118,7 +118,7 @@ func TestDelete(t *testing.T) {
 			RepoMock := tt.authStorageMock(mc)
 			TxManMock := tt.authTxManMock(mc)
 			CacheMock := tt.authCacheMock(mc)
-			service := userserv.NewService(RepoMock, TxManMock, CacheMock, nil)
+			service := user.NewService(RepoMock, TxManMock, CacheMock, nil)
 
 			err := service.Delete(ctx, tt.userID)
 			if tt.err != nil {

@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.auth_v1;
 
 import "validate/validate.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "github.com/Dnlbb/user/pkg/auth_v1;auth_v1";
 
@@ -10,6 +11,7 @@ service Auth {
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc GetRefreshToken(GetRefreshTokenRequest) returns (GetRefreshTokenResponse);
   rpc GetAccessToken(GetAccessTokenRequest) returns (GetAccessTokenResponse);
+  rpc Check(CheckRequest) returns (google.protobuf.Empty);
 }
 
 message LoginRequest {
@@ -35,4 +37,8 @@ message GetAccessTokenRequest {
 
 message GetAccessTokenResponse {
   string access_token = 1;
+}
+
+message CheckRequest {
+  string endpoint_address = 1;
 }

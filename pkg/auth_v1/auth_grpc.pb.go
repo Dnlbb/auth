@@ -8,10 +8,10 @@ package auth_v1
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -26,6 +26,7 @@ type AuthClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	GetRefreshToken(ctx context.Context, in *GetRefreshTokenRequest, opts ...grpc.CallOption) (*GetRefreshTokenResponse, error)
 	GetAccessToken(ctx context.Context, in *GetAccessTokenRequest, opts ...grpc.CallOption) (*GetAccessTokenResponse, error)
+	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authClient struct {
@@ -63,6 +64,15 @@ func (c *authClient) GetAccessToken(ctx context.Context, in *GetAccessTokenReque
 	return out, nil
 }
 
+func (c *authClient) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.auth_v1.Auth/Check", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
@@ -70,6 +80,7 @@ type AuthServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	GetRefreshToken(context.Context, *GetRefreshTokenRequest) (*GetRefreshTokenResponse, error)
 	GetAccessToken(context.Context, *GetAccessTokenRequest) (*GetAccessTokenResponse, error)
+	Check(context.Context, *CheckRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -85,6 +96,9 @@ func (UnimplementedAuthServer) GetRefreshToken(context.Context, *GetRefreshToken
 }
 func (UnimplementedAuthServer) GetAccessToken(context.Context, *GetAccessTokenRequest) (*GetAccessTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccessToken not implemented")
+}
+func (UnimplementedAuthServer) Check(context.Context, *CheckRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -153,6 +167,24 @@ func _Auth_GetAccessToken_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.auth_v1.Auth/Check",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).Check(ctx, req.(*CheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -171,6 +203,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccessToken",
 			Handler:    _Auth_GetAccessToken_Handler,
+		},
+		{
+			MethodName: "Check",
+			Handler:    _Auth_Check_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

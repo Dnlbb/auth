@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/Dnlbb/auth/internal/api/access"
 	"github.com/Dnlbb/auth/internal/api/auth"
 	"github.com/Dnlbb/auth/internal/api/user"
 	"github.com/Dnlbb/auth/internal/client/cache/redis"
@@ -13,10 +12,10 @@ import (
 	"github.com/Dnlbb/auth/internal/repository/postgres/storage"
 	redisCache "github.com/Dnlbb/auth/internal/repository/redis"
 	"github.com/Dnlbb/auth/internal/repository/repointerface"
-	"github.com/Dnlbb/auth/internal/service/accessserv"
-	"github.com/Dnlbb/auth/internal/service/authorizationserv"
+	userService "github.com/Dnlbb/auth/internal/service/user"
+
+	"github.com/Dnlbb/auth/internal/service/authorization"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
-	"github.com/Dnlbb/auth/internal/service/userserv"
 	"github.com/Dnlbb/platform_common/pkg/closer"
 	"github.com/Dnlbb/platform_common/pkg/db"
 	"github.com/Dnlbb/platform_common/pkg/db/pg"
@@ -44,13 +43,11 @@ type serviceProvider struct {
 	userRepository repointerface.StorageInterface
 	accessPolicy   repointerface.AccessPolicies
 
-	userService           servinterfaces.UserService
-	authorizationService  servinterfaces.AuthorizationService
-	accessPoliciesService servinterfaces.AccessService
+	userService          servinterfaces.UserService
+	authorizationService servinterfaces.AuthorizationService
 
 	userController          *user.Controller
 	authorizationController *auth.Controller
-	accessController        *access.Controller
 }
 
 func newServiceProvider() *serviceProvider {
@@ -254,7 +251,7 @@ func (s *serviceProvider) GetCache(ctx context.Context) repointerface.CacheInter
 // GetUserService инициализация сервиса авторизации.
 func (s *serviceProvider) GetUserService(ctx context.Context) servinterfaces.UserService {
 	if s.userService == nil {
-		s.userService = userserv.NewService(s.GetUserRepository(ctx),
+		s.userService = userService.NewService(s.GetUserRepository(ctx),
 			s.GetTxManager(ctx),
 			s.GetCache(ctx),
 			s.GetKafkaProducer(),
@@ -266,21 +263,14 @@ func (s *serviceProvider) GetUserService(ctx context.Context) servinterfaces.Use
 
 func (s *serviceProvider) GetAuthorizationService(ctx context.Context) servinterfaces.AuthorizationService {
 	if s.authorizationService == nil {
-		s.authorizationService = authorizationserv.NewService(
+		s.authorizationService = authorization.NewService(
 			s.GetUserRepository(ctx),
 			s.GetCache(ctx),
+			s.GetAccessPolicyRepository(ctx),
 			s.GetJwtConfig())
 	}
 
 	return s.authorizationService
-}
-
-func (s *serviceProvider) GetAccessService(ctx context.Context) servinterfaces.AccessService {
-	if s.accessPoliciesService == nil {
-		s.accessPoliciesService = accessserv.NewService(s.GetAccessPolicyRepository(ctx))
-	}
-
-	return s.accessPoliciesService
 }
 
 // GetUserController инициализация контроллера.
@@ -298,12 +288,4 @@ func (s *serviceProvider) GetAuthorizationController(ctx context.Context) *auth.
 	}
 
 	return s.authorizationController
-}
-
-func (s *serviceProvider) GetAccessController(ctx context.Context) *access.Controller {
-	if s.accessController == nil {
-		s.accessController = access.NewController(s.GetAccessService(ctx))
-	}
-
-	return s.accessController
 }
