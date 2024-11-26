@@ -12,7 +12,7 @@ type AccessPolicyRepository struct {
 // NewAccessPolicyRepository конструктор для хранилища с политиками доступа.
 func NewAccessPolicyRepository() repointerface.AccessPolicies {
 	return AccessPolicyRepository{policies: map[string][]string{
-		"USER":             {"api.chat/SendMessage"},
-		"ADMIN":            {"api.chat/SendMessage", "api.chat/Delete", "api.chat/Create"},
-		"ROLE_UNSPECIFIED": {"api.chat/SendMessage"}}}
+		"USER":             {"/api.chat/SendMessage", "/api.chat/Create"},
+		"ADMIN":            {"/api.chat/SendMessage", "/api.chat/Delete", "/api.chat/Create"},
+		"ROLE_UNSPECIFIED": {"/api.chat/SendMessage"}}}
 }
