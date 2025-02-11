@@ -8,19 +8,19 @@ import (
 	"github.com/Dnlbb/auth/internal/models"
 )
 
-func (s service) Get(ctx context.Context, params models.GetUserParams) (*models.User, error) {
+func (s service) GetByName(ctx context.Context, name string) (*models.User, error) {
 	var (
 		userProfile *models.User
 		errCache    error
 		err         error
 	)
 
-	userProfile, errCache = s.cache.Get(ctx, params)
+	userProfile, errCache = s.cache.GetByName(ctx, name)
 	if errCache != nil {
 		if errors.Is(errCache, models.ErrUserNotFound) {
 			err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 				var errTx error
-				userProfile, errTx = s.storage.GetUser(ctx, params)
+				userProfile, errTx = s.storage.GetUserByName(ctx, name)
 				if errTx != nil {
 					return fmt.Errorf("error getting user profile: %w", errTx)
 				}

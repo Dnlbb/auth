@@ -14,18 +14,6 @@ const (
 	strAdmin           = "ADMIN"
 )
 
-func mappingUserParams(userParams *userv1.GetRequest) models.GetUserParams {
-	var params models.GetUserParams
-	switch nameOrID := userParams.NameOrId.(type) {
-	case *userv1.GetRequest_Id:
-		params.ID = &nameOrID.Id
-	case *userv1.GetRequest_Username:
-		params.Username = &nameOrID.Username
-	}
-
-	return params
-}
-
 func toModelRole(role userv1.Role) string {
 	switch role {
 	case userv1.Role_ROLE_UNSPECIFIED:
@@ -49,10 +37,10 @@ func toModelUser(user *userv1.CreateRequest) models.User {
 		Password: user.Password}
 }
 
-func toProtoUserProfile(user models.User) *userv1.GetResponse {
+func toProtoUserProfile(user models.User) *userv1.GetByResponse {
 	userRole := role2String(user.Role)
 
-	return &userv1.GetResponse{
+	return &userv1.GetByResponse{
 		Id: user.ID,
 		User: &userv1.User{
 			Name:  user.Name,

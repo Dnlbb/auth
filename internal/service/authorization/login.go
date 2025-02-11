@@ -9,7 +9,7 @@ import (
 )
 
 func (s service) Login(ctx context.Context, user models.User) (*string, error) {
-	User, err := s.storage.GetUser(ctx, models.GetUserParams{Username: &user.Name})
+	User, err := s.storage.GetUserByName(ctx, user.Name)
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}

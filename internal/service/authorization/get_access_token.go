@@ -15,7 +15,7 @@ func (s service) GetAccessToken(ctx context.Context, refreshToken string) (*stri
 		return nil, status.Errorf(codes.Aborted, "invalid refresh token")
 	}
 
-	user, err := s.storage.GetUser(ctx, models.GetUserParams{Username: &claims.Username})
+	user, err := s.storage.GetUserByName(ctx, claims.Username)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
