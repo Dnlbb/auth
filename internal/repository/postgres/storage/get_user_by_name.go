@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// GetUser получаем пользователя из базы postgresql
-func (s *storage) GetUser(ctx context.Context, params models.GetUserParams) (*models.User, error) {
+// GetUserByName получаем пользователя из базы postgresql
+func (s *storage) GetUserByName(ctx context.Context, name string) (*models.User, error) {
 	var (
 		user models.User
 		err  error
@@ -27,12 +27,7 @@ func (s *storage) GetUser(ctx context.Context, params models.GetUserParams) (*mo
 		"updated_at",
 	).From("users")
 
-	switch {
-	case params.ID != nil:
-		query = query.Where(sq.Eq{"id": *params.ID})
-	case params.Username != nil:
-		query = query.Where(sq.Eq{"name": *params.Username})
-	}
+	query = query.Where(sq.Eq{"name": name})
 
 	query = query.PlaceholderFormat(sq.Dollar)
 

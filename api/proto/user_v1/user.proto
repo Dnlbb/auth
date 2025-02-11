@@ -35,11 +35,18 @@ service UserApi {
         };
     }
 
-    rpc Get(GetRequest) returns (GetResponse) {
+    rpc GetById(GetByIdRequest) returns (GetByResponse) {
         option (google.api.http) = {
-            get: "/user/get"
+            get: "/user/get-by-id"
         };
     }
+
+    rpc GetByName(GetByNameRequest) returns (GetByResponse) {
+        option (google.api.http) = {
+            get: "/user/get-by-name"
+        };
+    }
+
 
     rpc Update(UpdateRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
@@ -65,15 +72,23 @@ message CreateResponse {
     int64 id = 1;
 }
 
-message GetRequest {
-    oneof nameOrId {
-        option (validate.required) = true;
-        int64 id = 1;
-        string username = 2 [(validate.rules).string = {ignore_empty: true, min_len: 1, max_len: 255}];
-    }
+message GetByIdRequest {
+    int64 id = 1;
 }
 
-message GetResponse {
+message GetByNameRequest {
+    string name = 1;
+}
+
+message GetByNameResponse {
+    int64 id = 1;
+    User user = 2;
+    google.protobuf.Timestamp created_at = 3;
+    google.protobuf.Timestamp updated_at = 4;
+}
+
+
+message GetByResponse {
     int64 id = 1;
     User user = 2;
     google.protobuf.Timestamp created_at = 3;

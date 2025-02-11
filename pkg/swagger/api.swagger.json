@@ -87,14 +87,14 @@
         ]
       }
     },
-    "/user/get": {
+    "/user/get-by-id": {
       "get": {
-        "operationId": "UserApi_Get",
+        "operationId": "UserApi_GetById",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/user_v1GetResponse"
+              "$ref": "#/definitions/user_v1GetByResponse"
             }
           },
           "default": {
@@ -111,9 +111,33 @@
             "required": false,
             "type": "string",
             "format": "int64"
+          }
+        ],
+        "tags": [
+          "UserApi"
+        ]
+      }
+    },
+    "/user/get-by-name": {
+      "get": {
+        "operationId": "UserApi_GetByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/user_v1GetByResponse"
+            }
           },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
           {
-            "name": "username",
+            "name": "name",
             "in": "query",
             "required": false,
             "type": "string"
@@ -210,7 +234,7 @@
         }
       }
     },
-    "user_v1GetResponse": {
+    "user_v1GetByResponse": {
       "type": "object",
       "properties": {
         "id": {

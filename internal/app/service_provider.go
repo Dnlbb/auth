@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/Dnlbb/auth/internal/api/auth"
-	"github.com/Dnlbb/auth/internal/api/user"
+	"github.com/Dnlbb/auth/internal/api/handler/auth"
+	"github.com/Dnlbb/auth/internal/api/handler/user"
 	"github.com/Dnlbb/auth/internal/client/cache/redis"
 	"github.com/Dnlbb/auth/internal/config"
 	"github.com/Dnlbb/auth/internal/repository/AccessPolicies"

@@ -11,7 +11,8 @@ type UserService interface {
 	Create(ctx context.Context, user models.User) (*int64, error)
 	Delete(ctx context.Context, userID models.DeleteID) error
 	Update(ctx context.Context, userUpdate models.User) error
-	Get(ctx context.Context, params models.GetUserParams) (*models.User, error)
+	GetById(ctx context.Context, id int) (*models.User, error)
+	GetByName(ctx context.Context, name string) (*models.User, error)
 }
 
 // AuthorizationService интерфейс реализации авторизации и аутентификации.

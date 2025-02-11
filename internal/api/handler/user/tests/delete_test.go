@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Dnlbb/auth/internal/api/user"
+	"github.com/Dnlbb/auth/internal/api/handler/user"
 	"github.com/Dnlbb/auth/internal/models"
 	serviceMocks "github.com/Dnlbb/auth/internal/service/mocks"
 	"github.com/Dnlbb/auth/internal/service/servinterfaces"
